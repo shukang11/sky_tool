@@ -50,9 +50,10 @@ def listall():
 
 
 @api.route('/file/delete', methods=['POST'])
+
 def delete():
     file_id = request.args.get('file_id')
-    item = db.session.query_by(file_id==file_id).first()
+    item = db.session.query(FileModel).filter(file_id==file_id).all()
     if item:
         path = fileStorage.path(item.file_hash)
         try: os.remove(path)

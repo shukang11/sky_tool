@@ -16,6 +16,8 @@ flask = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
 redis = "*"
+flask-security = "*"
+flask-admin = "*"
 
 
 [dev-packages]
