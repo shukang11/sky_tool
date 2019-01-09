@@ -19,6 +19,10 @@ class Config:
     UPLOADS_DEFAULT_DEST = UPLOAD_FOLDER
     MAX_CONTENT_LENGTH = 10*1024*1024
 
+    """Flask Security 配置"""
+    SECURITY_PASSWORD_SALT = "saltValue"
+    SECURITY_PASSWORD_HASH = "sha512_crypt"
+
     @classmethod
     def init_app(app, *args, **kwargs):
         pass

@@ -4,7 +4,7 @@ from werkzeug.datastructures import FileStorage
 from flask import request, jsonify
 from app.utils.ext import fileStorage, db
 from ..views import api
-from ..utils.respObj import RespObj
+from app.utils.respObj import RespObj
 from app.models import FileModel
 
 
@@ -13,15 +13,16 @@ def upload():
     # 如果是单个文件
     # file = request.files["files"]
     files: list = request.files.getlist("files")
+    if len(files) == 0:
+        return jsonify(RespObj(0, toast="请上传文件").json())
     resp = []
     for file in files:
-        print(file)
         file: FileStorage = file
         extension = file.filename.split('.')
         identifier = str(uuid.uuid4()).replace("-", "")+"."+extension[1]
         try:
             rec = fileStorage.save(file, name=identifier)
-            fileObj = FileModel(file_hash=identifier, file_name=file.name, file_type=file.mimetype)
+            fileObj = FileModel(file_hash=identifier, file_name=file.filename, file_type=file.mimetype)
             fileObj.save(commit=True)
             resp.append({
                 "origin": file.filename,
@@ -50,10 +51,9 @@ def listall():
 
 
 @api.route('/file/delete', methods=['POST'])
-
 def delete():
     file_id = request.args.get('file_id')
-    item = db.session.query(FileModel).filter(file_id==file_id).all()
+    item = db.session.query(FileModel).filter(file_id==file_id).first()
     if item:
         path = fileStorage.path(item.file_hash)
         try: os.remove(path)

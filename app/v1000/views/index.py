@@ -1,6 +1,6 @@
-from flask import request, jsonify
+from flask import jsonify
 from ..views import api
-from ..utils.respObj import RespObj
+from app.utils.respObj import RespObj
 
 
 @api.route('/help', methods=['GET'])

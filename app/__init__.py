@@ -1,11 +1,10 @@
-from app.utils.ext import Flask, request, db, fileStorage
+from flask_uploads import configure_uploads
+from app.utils.ext import Flask, db, fileStorage
 from config import config, Config, root_dir
 import os
-from flask_sqlalchemy import SQLAlchemy
-from flask_uploads import configure_uploads
 
 
-__all__ = ['db', 'create_app']
+__all__ = ['create_app']
 
 route_list = []
 
