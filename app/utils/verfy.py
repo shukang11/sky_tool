@@ -14,7 +14,7 @@ def login_require(func):
         params = request.values or request.get_json() or {}
         token = params.get('token') or params.get('token')
         if not token:
-            return 'hello', 404
+            return 'login require', 404
         # check
         user = User.get_user(req_token=token)
         if not user:
