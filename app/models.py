@@ -3,7 +3,11 @@ from app.utils.ext import INTEGER, \
     ForeignKey, DECIMAL, db
 
 
-__all__ = []
+"""
+doc: http://docs.jinkan.org/docs/flask-sqlalchemy/models.html
+"""
+
+__all__ = ['User', 'FileModel']
 
 # 对外展示的
 tables = {}
@@ -32,25 +36,9 @@ class BaseModel():
 
 
     @staticmethod
-    def queryAll(Model):
-        items = db.session.query(Model)
+    def query_all(Model):
+        items = db.session.query(Model).all()
         return items or []
-
-
-# Define models
-Roles_Users = db.Table('roles_users',
-        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
-
-@addModel
-class Role(db.Model, BaseModel):
-    __tablename__ = "bao_role"
-
-    id = db.Column(INTEGER, primary_key=True)
-    name = db.Column(String(80), unique=True)
-    weights = db.Column(INTEGER) # 权重
-    description = db.Column(String(255), nullable=True)
-
 
 @addModel
 class User(db.Model, BaseModel):
@@ -58,22 +46,23 @@ class User(db.Model, BaseModel):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
+    nickname = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255))
-    login_token = db.Column(String(64), nullable=True)
-    req_token =db.Column(String(64), nullable=True)
+    status = db.Column(db.SMALLINT, default=0) # 用户状态
+    token = db.Column(String(64), nullable=True) # 用本地的token ，用来重新获得请求 token 的 token
 
     @classmethod
-    def get_user(cls, user_id=None, login_token=None, req_token=None):
-        try:
-            if user_id:
-                return db.session.query(User).filter_by(id=user_id).first()
-            elif login_token:
-                return db.session.query(User).filter_by(login_token=login_token).first()
-            elif req_token:
-                return db.session.query(User).filter_by(req_token=req_token).first()
-            pass
-        except:
-            return None
+    def get_user(cls, user_id=None, token=None):
+        """
+        获得用户
+        :param user_id: 用户的id
+        :param token:  用户的token
+        :return: 用户实例， 可能为空
+        """
+        if user_id:
+            return db.session.query(User).filter_by(id=user_id).first()
+        elif token:
+            return db.session.query(User).filter_by(token=token).first()
 
 
 @addModel

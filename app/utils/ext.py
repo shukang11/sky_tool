@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, \
     UnmappedColumnError
 from sqlalchemy import Sequence
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, g
 from flask_uploads import UploadSet, DEFAULTS
 import redis
 
@@ -21,4 +21,4 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "NoResultFound", "MultipleResultsFound",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
-           "fileStorage"]
+           "fileStorage", "jsonify", "g"]

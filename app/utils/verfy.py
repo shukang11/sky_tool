@@ -1,7 +1,8 @@
 from functools import wraps
-from app.utils.ext import request, db, jsonify
-from app.utils import RespObj
-from app.models import User, Role, Roles_Users
+from app.utils.ext import request, db, jsonify, g
+from app.utils import CommonError, UserError
+from app.models import User
+
 
 def login_require(func):
     """
@@ -14,10 +15,11 @@ def login_require(func):
         params = request.values or request.get_json() or {}
         token = params.get('token') or params.get('token')
         if not token:
-            return 'login require', 404
+            return CommonError.get_error(43000)
         # check
-        user = User.get_user(req_token=token)
+        user = User.get_user(token=token)
         if not user:
-            return jsonify(RespObj(0,toast="请先登录").json())
+            return UserError.get_error(40203)
+        g.current_user = user
         return func(*args, **kwargs)
     return decorator_view

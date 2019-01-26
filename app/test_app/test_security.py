@@ -9,6 +9,7 @@
 
 import unittest
 from app.utils import login_require
+from app.models import db, User
 from flask import request
 from main import app
 
@@ -18,4 +19,3 @@ class TestSecurity(unittest.TestCase):
     def test_index(self):
         with app.test_request_context("/api/v1000/help"):
             print(request.values)
-        pass

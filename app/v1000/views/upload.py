@@ -4,7 +4,7 @@ from werkzeug.datastructures import FileStorage
 from flask import request, jsonify
 from app.utils.ext import fileStorage, db
 from ..views import api
-from app.utils.respObj import RespObj
+from app.utils import response_succ, CommonError
 from app.models import FileModel
 
 
@@ -14,7 +14,7 @@ def upload():
     # file = request.files["files"]
     files: list = request.files.getlist("files")
     if len(files) == 0:
-        return jsonify(RespObj(0, toast="请上传文件").json())
+        return CommonError.get_error(40000)
     resp = []
     for file in files:
         file: FileStorage = file
@@ -30,8 +30,8 @@ def upload():
             })
         except Exception as e:
             print(e)
-            return jsonify(RespObj(0,toast="error").json())
-    return jsonify(RespObj(1, body=resp, toast="收到{}个文件".format(len(resp))).json())
+            return CommonError.get_error(9999)
+    return response_succ(body=resp)
 
 
 @api.route('/file/list', methods=['POST', 'GET'])
@@ -47,7 +47,7 @@ def listall():
             "hash": f.file_hash,
             "url": fileStorage.url(f.file_hash)
         })
-    return jsonify(RespObj(1, body=payload).json())
+    return response_succ(body=payload)
 
 
 @api.route('/file/delete', methods=['POST'])
@@ -56,9 +56,12 @@ def delete():
     item = db.session.query(FileModel).filter(file_id==file_id).first()
     if item:
         path = fileStorage.path(item.file_hash)
-        try: os.remove(path)
-        except: pass
+        try:
+            os.remove(path)
+        except Exception as _:
+            return CommonError.get_error(9999)
+
         item: FileModel = item
         item.delete(logic=False)
-        return jsonify(RespObj(1).json())
-    return jsonify(RespObj(0, toast="文件不存在").json())
+        return response_succ()
+    return CommonError.get_error(40400)

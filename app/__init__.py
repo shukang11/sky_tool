@@ -13,17 +13,16 @@ def fetch_route(blueprint, prefix=None):
     t = (blueprint, prefix)
     route_list.append(t)
 
+
 def register_blueprint(app):
     app_dir = os.path.join(root_dir, 'app')
     for routes in os.listdir(app_dir):
         rou_path = os.path.join(app_dir, routes)
         if (not os.path.isfile(rou_path)) \
                 and routes != 'static' \
-                and routes != 'templates':
-            try:
-                __import__('app.' + routes)
-            except:
-                pass
+                and routes != 'templates' \
+                and not routes.startswith('__'):
+            __import__('app.' + routes)
 
     print(route_list)
     for blueprints in route_list:
