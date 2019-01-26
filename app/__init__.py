@@ -8,7 +8,6 @@ __all__ = ['create_app']
 
 route_list = []
 
-
 def fetch_route(blueprint, prefix=None):
     t = (blueprint, prefix)
     route_list.append(t)
@@ -32,20 +31,21 @@ def register_blueprint(app):
             app.register_blueprint(blueprints[0])
 
 
-def createTable(config_name, app):
+def create_table(config_name, app):
     if config_name is not 'production':
         from app.models import __all__
         with app.test_request_context():
             db.create_all()
 
+
 def create_app(env: str) -> Flask:
-    configObj = config[env]
+    configobj = config[env]
     app = Flask(__name__)
-    app.config.from_object(configObj)
+    app.config.from_object(configobj)
     db.init_app(app)
-    configObj.init_app(app)
+    configobj.init_app(app)
     # 注册插件
     register_blueprint(app)
     configure_uploads(app, fileStorage)
-    createTable(env, app)
+    create_table(env, app)
     return app

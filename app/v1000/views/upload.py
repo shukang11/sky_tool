@@ -1,7 +1,7 @@
 import uuid
 import os
 from werkzeug.datastructures import FileStorage
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from app.utils.ext import fileStorage, db
 from ..views import api
 from app.utils import response_succ, CommonError
@@ -36,7 +36,7 @@ def upload():
 
 @api.route('/file/list', methods=['POST', 'GET'])
 def listall():
-    allFiles = FileModel.queryAll(FileModel)
+    allFiles = FileModel.query_all(FileModel)
     payload = []
     for file in allFiles:
         f: FileModel = file
@@ -47,6 +47,8 @@ def listall():
             "hash": f.file_hash,
             "url": fileStorage.url(f.file_hash)
         })
+    if request.method == "GET":
+        return render_template("all_images.html", images=payload)
     return response_succ(body=payload)
 
 
