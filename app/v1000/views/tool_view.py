@@ -9,7 +9,6 @@ import hashlib
 from flask import request
 from ..views import api
 from app.utils import response_succ, CommonError
-from app.utils.ext import scheduler
 
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST"])

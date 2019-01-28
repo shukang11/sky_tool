@@ -31,6 +31,10 @@ class CommonError(ApiError):
         }
         return switcher.get(error_code or 9999)
 
+    @classmethod
+    def error_toast(cls, msg="error_message"):
+        return response_error(error_code=40001, msg=msg, http_code=400)
+
 
 class UserError(CommonError):
 
