@@ -13,5 +13,8 @@ from app.utils import response_succ, CommonError, UserError, login_require
 
 @api.route("/permission/delivery", methods=["POST"])
 def delivery_authority():
+    """
+    授权 undo
+    """
     params = request.values or request.get_json()
     pass

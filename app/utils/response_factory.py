@@ -123,6 +123,8 @@ def response_error(error_code=0, msg=None, http_code=0, header=None):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Method': '*'
         }
-    return jsonify(__error_handler(msg=msg,
+    data = __error_handler(msg=msg,
                                    code=error_code,
-                                   request="{0} {1}".format(r.method, r.path))), http_code, header
+                                   request="{0} {1}".format(r.method, r.path))
+
+    return jsonify(data) or jsonify({"error": "cant jsonify"}), http_code, header

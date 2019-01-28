@@ -75,3 +75,14 @@ class FileModel(db.Model, BaseModel):
     file_hash = Column(String, nullable=False)
     file_name = Column(String, nullable=True)
     file_type = Column(String, nullable=True)
+
+
+@addModel
+class LoginRecord(db.Model, BaseModel):
+
+    __tablename__ = "bao_login_record"
+
+    record_id = Column(INTEGER, Sequence(start=1, increment=1, name="record_id_sep"), primary_key=True, autoincrement=True)
+    user_id = Column(INTEGER)
+    login_time = Column(String, nullable=True)
+    log_ip = Column(String(20), nullable=True)

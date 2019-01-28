@@ -23,13 +23,13 @@ class CommonError(ApiError):
             # 未知错误
             9999: response_error(error_code=9999, msg="unknown_error", http_code=400),
             # 参数不全或错误
-            40000: response_error(error_code=40000, msg="missing_args", http_code=400),
+            40000: response_error(error_code=40000, msg="args_missing_or_wrong", http_code=400),
             # 需要权限
             43000: response_error(error_code=43000, msg="need_permission", http_code=401),
             # 资源不存在
             44000: response_error(error_code=44000, msg="url_not_found", http_code=404),
         }
-        return switcher.get(error_code or 9999, {"error": None})
+        return switcher.get(error_code or 9999)
 
 
 class UserError(CommonError):

@@ -6,10 +6,6 @@ from app.utils import login_require, getmd5, get_random_num
 from app.models import User, db
 
 
-def login():
-    pass
-
-
 @api.route("/user/register", methods=["POST"])
 def register():
     params = request.values or request.get_json() or {}
@@ -46,6 +42,12 @@ def login():
         return UserError.get_error(40201)
 
 
+@api.route("/user/logout", methods=["POST", "GET"])
+@login_require
+def logout():
+    return response_succ(body="Loged out")
+
+
 @api.route("/user/info", methods=["POST"])
 @login_require
 def user_info():
@@ -56,6 +58,7 @@ def user_info():
         "token": user.token
     }
     return response_succ(body=info)
+
 
 @api.route("/user/nickname", methods=["GET", "POST"])
 @login_require

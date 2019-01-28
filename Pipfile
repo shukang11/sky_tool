@@ -18,6 +18,7 @@ flask-sqlalchemy = "*"
 redis = "*"
 flask-security = "*"
 flask-admin = "*"
+records = "*"
 
 
 [dev-packages]
