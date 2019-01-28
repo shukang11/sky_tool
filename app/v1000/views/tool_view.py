@@ -9,6 +9,7 @@ import hashlib
 from flask import request
 from ..views import api
 from app.utils import response_succ, CommonError
+from app.utils.ext import scheduler
 
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST"])
@@ -37,3 +38,4 @@ def encryption(encrypt_type: str = "md5"):
     result_map["target"] = result
     result_map["type"] = encrypt_type
     return response_succ(body=result_map)
+

@@ -7,6 +7,21 @@
 '''
 import hashlib
 import random
+import datetime
+import time
+
+
+def get_unix_time_tuple(date=datetime.datetime.now()):
+    """获得unix 时间戳"""
+    return time.mktime(date.timetuple())
+
+
+def get_date_from_time_tuple(unix_time=get_unix_time_tuple(), formatter='%Y-%m-%d %H:%M:%S') -> time:
+    """时间戳转换成时间"""
+    t = int(unix_time)
+    time_locol = time.localtime(t)
+    return time.strftime(formatter, time_locol)
+
 
 def getmd5(code):
     """获得md5加密的字符串"""

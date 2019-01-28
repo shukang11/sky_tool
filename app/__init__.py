@@ -1,12 +1,18 @@
 from flask_uploads import configure_uploads
-from app.utils.ext import Flask, db, fileStorage
+from app.utils.ext import Flask, db, fileStorage, scheduler
 from config import config, Config, root_dir
 import os
 
 
+def log():
+    print("scheduler is running")
+
+
 __all__ = ['create_app']
 
+
 route_list = []
+
 
 def fetch_route(blueprint, prefix=None):
     t = (blueprint, prefix)
@@ -39,13 +45,16 @@ def create_table(config_name, app):
 
 
 def create_app(env: str) -> Flask:
-    configobj = config[env]
+    config_obj = config[env]
     app = Flask(__name__)
-    app.config.from_object(configobj)
+    app.config.from_object(config_obj)
     db.init_app(app)
-    configobj.init_app(app)
+    config_obj.init_app(app)
     # 注册插件
     register_blueprint(app)
     configure_uploads(app, fileStorage)
     create_table(env, app)
+    # 开启定时任务
+    scheduler.add_job(log, 'interval', seconds=1000)
+    scheduler.start()
     return app

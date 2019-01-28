@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>All Images</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .wrapper {
+        /* position: relative; */
+        -webkit-column-width: 17rem;
+        -moz-column-width: 17rem;
+        column-width: 17rem;
+      }
+
+      .box {
+        padding: 1rem 0.5rem 0.5rem;
+        float: left;
+      }
+
+      .pic {
+        border: 0.1rem solid #dddddd;
+      }
+
+      .pic img {
+        width: 17rem;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      {% for item in images %}
+      <div class="box">
+        <div class="pic"><img src="{{ item.url }}" /></div>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>

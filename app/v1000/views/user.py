@@ -1,9 +1,8 @@
-
 from flask import request, current_app, g
 from ..views import api
 from app.utils import response_succ, CommonError, UserError
-from app.utils import login_require, getmd5, get_random_num
-from app.models import User, db
+from app.utils import login_require, getmd5, get_random_num, get_unix_time_tuple
+from app.models import User, db, LoginRecord
 
 
 @api.route("/user/register", methods=["POST"])
@@ -30,13 +29,21 @@ def login():
     params = request.values or request.get_json() or {}
     email = params.get("email")
     password = params.get("password")
-    exsist_user = db.session.query(User).filter_by(email=email, password=password).first()
+    exsist_user: User = db.session.query(User).filter_by(email=email, password=password).first()
     if exsist_user:
         # update token
         salt = current_app.config['SECURITY_PASSWORD_SALT'] or 'token'
         token = getmd5("{}{}{}".format(salt, email, get_random_num(5)))
         exsist_user.token = token
-        db.session.commit(exsist_user)
+
+        # update log time
+        record = LoginRecord()
+        record.user_id = exsist_user.id
+        record.login_time = get_unix_time_tuple()
+        record.log_ip = request.args.get("user_ip") or request.remote_addr
+        db.session.add(record)
+
+        db.session.commit()
         return response_succ()
     else:
         return UserError.get_error(40201)
@@ -45,7 +52,7 @@ def login():
 @api.route("/user/logout", methods=["POST", "GET"])
 @login_require
 def logout():
-    return response_succ(body="Loged out")
+    return response_succ(body="loged out")
 
 
 @api.route("/user/info", methods=["POST"])

@@ -1,6 +1,6 @@
 [[source]]
 
-url = "http://pypi.douban.com/simple/"
+url = "https://pypi.douban.com/simple/"
 verify_ssl = true
 name = "pypi"
 
@@ -19,6 +19,8 @@ redis = "*"
 flask-security = "*"
 flask-admin = "*"
 records = "*"
+celery = "*"
+apscheduler = "*"
 
 
 [dev-packages]
