@@ -60,7 +60,7 @@ def delete():
         path = fileStorage.path(item.file_hash)
         try:
             os.remove(path)
-        except Exception as _:
+        except:
             return CommonError.get_error(9999)
 
         item: FileModel = item

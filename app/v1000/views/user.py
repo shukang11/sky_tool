@@ -26,9 +26,11 @@ def register():
 
 @api.route("/user/login", methods=["POST"])
 def login():
-    params = request.values or request.get_json() or {}
+    params = request.values
+    print(params)
     email = params.get("email")
     password = params.get("password")
+    print("params: {}".format(password))
     exsist_user: User = db.session.query(User).filter_by(email=email, password=password).first()
     if exsist_user:
         # update token
@@ -44,9 +46,9 @@ def login():
         db.session.add(record)
 
         db.session.commit()
-        return response_succ()
+        return response_succ(body={'token': token})
     else:
-        return UserError.get_error(40201)
+        return UserError.get_error(40203)
 
 
 @api.route("/user/logout", methods=["POST", "GET"])

@@ -75,7 +75,7 @@ R403_FORBIDDEN = {}
 R404_NOT_FOUND = {}
 
 
-def response_succ(status_code=200, body=None, header=None):
+def response_succ(status_code=200, body={}, header=None):
     success_codes = [200, 201, 202, 204]
     if status_code not in success_codes:
         raise ValueError("statusCode is not in successCodes")

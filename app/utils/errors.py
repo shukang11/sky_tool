@@ -29,7 +29,9 @@ class CommonError(ApiError):
             # 资源不存在
             44000: response_error(error_code=44000, msg="url_not_found", http_code=404),
         }
-        return switcher.get(error_code or 9999)
+        resp = switcher.get(error_code or 9999)
+        assert resp != None
+        return resp
 
     @classmethod
     def error_toast(cls, msg="error_message"):

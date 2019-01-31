@@ -5,6 +5,9 @@
 @time: 2019-01-28 15:42
 
 """
+"""
+分布式 计算框架配置 
+"""
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT=['json']
