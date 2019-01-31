@@ -29,7 +29,11 @@ file_handle.setFormatter(formatter)
 logger.addHandler(file_handle)
 
 
-class TestLog(unittest.TestCase):
+class test_logging(unittest.TestCase):
+
+    def test_begin(self):
+        print("begin test")
+        self.assertEqual(1,2)
 
     def test_log(self):
         print("test_log")
@@ -39,3 +43,10 @@ class TestLog(unittest.TestCase):
         logger.error("error message")
         logger.critical("critical message")
         self.assertEqual(1, 1)
+
+if __name__ == "__main__":
+    logger.debug("debuge message")
+    logger.info("info message")
+    logger.warning("warning message")
+    logger.error("error message")
+    logger.critical("critical message")

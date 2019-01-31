@@ -10,7 +10,6 @@ def log():
 
 __all__ = ['create_app']
 
-
 route_list = []
 
 

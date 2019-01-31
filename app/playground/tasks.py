@@ -6,6 +6,9 @@
 
 """
 
+"""
+这是一个分布式计算的框架，不学习，空置
+"""
 from celery import Celery
 import redis
 

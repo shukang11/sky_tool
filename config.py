@@ -23,6 +23,11 @@ class Config:
     SECURITY_PASSWORD_SALT = "saltValue"
     SECURITY_PASSWORD_HASH = "sha512_crypt"
 
+
+    """ Logging 设置 """
+    LOGGING_FORMATTER = "%(asctime)-15s %(levelname)s %(filename)s %(lineno)d %(process)d %(message)s"
+    LOGGING_DATE_FORMATTER = "%a %d %b %Y %H:%M:%S"
+
     @classmethod
     def init_app(app, *args, **kwargs):
         pass
