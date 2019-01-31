@@ -21,7 +21,6 @@ flask-admin = "*"
 records = "*"
 celery = "*"
 apscheduler = "*"
-flask-cors = "*"
 
 
 [dev-packages]
