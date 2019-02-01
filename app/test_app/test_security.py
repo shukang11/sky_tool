@@ -18,4 +18,4 @@ class TestSecurity(unittest.TestCase):
 
     def test_index(self):
         with app.test_request_context("/api/v1000/help"):
-            print(request.values)
+            app.logger.debug(request.values)

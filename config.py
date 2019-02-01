@@ -1,7 +1,7 @@
 import os
+import logging
 
 root_dir = os.path.abspath((os.path.dirname(__file__)))
-
 
 class Config:
     # 开启跨站请求伪造防护
@@ -27,10 +27,14 @@ class Config:
     """ Logging 设置 """
     LOGGING_FORMATTER = "%(asctime)-15s %(levelname)s %(filename)s %(lineno)d %(process)d %(message)s"
     LOGGING_DATE_FORMATTER = "%a %d %b %Y %H:%M:%S"
+    LOGGING_DIR = os.path.join(root_dir, 'logs')
 
     @classmethod
     def init_app(app, *args, **kwargs):
-        pass
+        logging.basicConfig(
+            filename=os.path.join(Config.LOGGING_DIR, 'debug.log'), 
+            level=logging.WARNING
+            )
 
 
 class DevelopmentConfig(Config):

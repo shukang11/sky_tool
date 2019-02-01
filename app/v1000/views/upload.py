@@ -1,7 +1,7 @@
 import uuid
 import os
 from werkzeug.datastructures import FileStorage
-from flask import request, jsonify, render_template
+from flask import request, jsonify, render_template, current_app
 from app.utils.ext import fileStorage, db
 from ..views import api
 from app.utils import response_succ, CommonError
@@ -29,7 +29,7 @@ def upload():
                 "fileName": fileStorage.url(rec)
             })
         except Exception as e:
-            print(e)
+            current_app.logger.error(e)
             return CommonError.get_error(9999)
     return response_succ(body=resp)
 

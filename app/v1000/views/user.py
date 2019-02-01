@@ -27,10 +27,8 @@ def register():
 @api.route("/user/login", methods=["POST"])
 def login():
     params = request.values
-    print(params)
     email = params.get("email")
     password = params.get("password")
-    print("params: {}".format(password))
     exsist_user: User = db.session.query(User).filter_by(email=email, password=password).first()
     if exsist_user:
         # update token

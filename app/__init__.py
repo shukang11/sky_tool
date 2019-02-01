@@ -1,11 +1,11 @@
 from flask_uploads import configure_uploads
-from app.utils.ext import Flask, db, fileStorage, scheduler
+from app.utils.ext import Flask, db, fileStorage, scheduler, current_app
 from config import config, Config, root_dir
 import os
 
 
 def log():
-    print("scheduler is running")
+    current_app.logger.debug("scheduler is running")
 
 
 __all__ = ['create_app']

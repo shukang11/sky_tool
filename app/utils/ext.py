@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, \
     UnmappedColumnError
 from sqlalchemy import Sequence
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, jsonify, g, render_template
+from flask import Flask, request, jsonify, g, render_template, current_app
 from flask_uploads import UploadSet, DEFAULTS
 import redis
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -26,4 +26,4 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
            "fileStorage", "jsonify", "g", "render_template",
-           "scheduler"]
+           "scheduler", "current_app"]

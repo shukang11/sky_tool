@@ -86,3 +86,19 @@ class LoginRecord(db.Model, BaseModel):
     user_id = Column(INTEGER)
     login_time = Column(String, nullable=True)
     log_ip = Column(String(20), nullable=True)
+
+@addModel
+class TodoModel(db.Model, BaseModel):
+    __tablename__ = "bao_todo"
+
+    todo_id = Column(
+        INTEGER, 
+        Sequence(start=1, increment=1, name="todo_id_sep"), 
+        primary_key=True, 
+        autoincrement=True
+        )
+    todo_title =Column(String, nullable=True)
+    add_time = Column(String(20), nullable=True)
+    bind_user_id = db.Column(db.Integer, primary_key=True)
+    todo_state = Column(SMALLINT, nullable=True) # 1 创建 2 完成 3 删除
+    
