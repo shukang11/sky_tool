@@ -21,7 +21,10 @@ flask-admin = "*"
 records = "*"
 celery = "*"
 apscheduler = "*"
-
+tzlocal = "*"
+flask-uploads = "*"
+numpy = "*"
+pandas = "*"
 
 [dev-packages]
 
