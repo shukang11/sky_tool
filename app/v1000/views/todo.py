@@ -8,6 +8,20 @@ from app.models import db, TodoModel
 @api.route("/todo/add", methods=["POST"])
 @login_require
 def add_todo():
+    """ add todo by parameters
+
+    try to add a todo to todolist,you can just set the todo title.
+
+    Args:
+        title: title of the todo item
+    
+    Returns:
+        a dict mapping keys to the index of the todo item just added.
+        example:
+        {"todo_id": 6}
+    
+    """
+
     parasm = request.values
     title = parasm.get("title")
     todo = TodoModel()
@@ -23,7 +37,29 @@ def add_todo():
     return response_succ(body=result)
 
 
-def set_todo_state(todo_id, state):
+def set_todo_state(todo_id: int, state: int) -> any:
+    """ change a todo item state
+
+    try to modify a todo_state, option (1, 2, 3)
+
+    Args:
+        todo_id: the index of the todo item you wanna change.
+        state: state value, 1: undo, 2: done, 3: removed
+    
+    Returns:
+        a dict mapping keys to the structure of the todo item just changed, if change failed, return None.
+        example:
+        {
+            "todo_id": 4,
+            "todo_title": "test todo",
+            "todo_state": 2
+        }
+    
+    Raises:
+        NoResultFound: An error occurred when A database result was required but none was found.
+    
+    """
+
     result = None
     try:
         todo = db.session.query(TodoModel).filter_by(todo_id=todo_id).one()
