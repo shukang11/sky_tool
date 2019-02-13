@@ -25,10 +25,14 @@ tzlocal = "*"
 flask-uploads = "*"
 numpy = "*"
 pandas = "*"
+mypy = "*"
+"flake8" = "*"
+
 
 [dev-packages]
 
 pylint = "*"
+"flake8" = "*"
 
 
 [requires]
