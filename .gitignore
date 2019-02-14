@@ -117,3 +117,6 @@ dmypy.json
 
 # fabric file
 fabfile.py
+
+# temp files
+uploads/files/
