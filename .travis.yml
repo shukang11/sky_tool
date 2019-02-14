@@ -1,0 +1,20 @@
+
+language: python
+
+# 指定版本
+python: 3.6
+
+# 先安装依赖
+before_install: pip install pipenv
+install:
+  - pipenv install
+
+# 指定测试的程序 如果是true 则默认为通过
+script: true
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
