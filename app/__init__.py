@@ -44,6 +44,7 @@ def create_table(config_name, app):
 
 
 def create_app(env: str) -> Flask:
+    assert(env is str)
     config_obj = config[env]
     app = Flask(__name__)
     app.config.from_object(config_obj)
