@@ -9,26 +9,31 @@ name = "pypi"
 
 requests = "*"
 click = "*"
-sqlalchemy = "*"
+SQLAlchemy = "*"
 pymysql = "*"
 pymongo = "*"
 flask = "*"
 gunicorn = "*"
-flask-sqlalchemy = "*"
+Flask-SQLAlchemy = "*"
 redis = "*"
-flask-security = "*"
+Flask-Security = "*"
 flask-admin = "*"
 records = "*"
 celery = "*"
-apscheduler = "*"
+APScheduler = "*"
 tzlocal = "*"
-flask-uploads = "*"
+Flask-Uploads = "*"
 numpy = "*"
 pandas = "*"
+mypy = "*"
+"flake8" = "*"
+Fabric = "*"
+
 
 [dev-packages]
 
 pylint = "*"
+"flake8" = "*"
 
 
 [requires]
