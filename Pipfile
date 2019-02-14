@@ -27,6 +27,7 @@ numpy = "*"
 pandas = "*"
 mypy = "*"
 "flake8" = "*"
+fabric = "*"
 
 
 [dev-packages]
