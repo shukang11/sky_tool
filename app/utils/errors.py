@@ -46,6 +46,8 @@ class UserError(CommonError):
             # 账号已存在
             40200: response_error(error_code=40200, msg="account_exsist", http_code=400),
             # 无此账号，无法找出用户
-            40203: response_error(error_code=40203, msg="no_account", http_code=400)
+            40203: response_error(error_code=40203, msg="no_account", http_code=400),
+            # token 过期
+            40204: response_error(error_code=40204, msg="token expired", http_code=400),
         }
         return switcher.get(error_code) or super(UserError, cls).get_error(error_code)
