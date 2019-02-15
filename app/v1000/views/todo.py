@@ -127,7 +127,6 @@ def filter_todo(filter: str=None):
         })
     return response_succ(body=result)
 
-
 @api.route("todo/undo", methods=["POST"])
 @login_require
 def undo_todo():

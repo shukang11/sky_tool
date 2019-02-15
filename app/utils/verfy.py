@@ -19,7 +19,7 @@ def login_require(func):
         # check
         user = User.get_user(token=token)
         if not user:
-            return UserError.get_error(40203)
+            return UserError.get_error(40204)
         g.current_user = user
         return func(*args, **kwargs)
     return decorator_view
