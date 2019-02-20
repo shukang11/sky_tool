@@ -42,7 +42,7 @@ def get_date_from_time_tuple(unix_time=get_unix_time_tuple(), formatter='%Y-%m-%
         a time type value, return time of incoming unix_time
     """
     if len(unix_time)  == 13:
-        unix_time = unix_time[0:-4]
+        unix_time = int(unix_time) / 1000
     t = int(unix_time)
     time_locol = time.localtime(t)
     return time.strftime(formatter, time_locol)
