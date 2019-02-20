@@ -23,8 +23,10 @@ def get_unix_time_tuple(date=datetime.datetime.now(), millisecond=False):
     Return:
         a str type value, return unix time of incoming time
     """
-    second = str(int(time.mktime(date.timetuple())))
-    return second+get_random_num(3) if millisecond else second
+    time_tuple = time.mktime(date.timetuple())
+    time_tuple = round(time_tuple * 1000) if millisecond else time_tuple
+    second = str(int(time_tuple))
+    return second
 
 
 def get_date_from_time_tuple(unix_time=get_unix_time_tuple(), formatter='%Y-%m-%d %H:%M:%S') -> time:
