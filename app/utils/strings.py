@@ -11,9 +11,10 @@ import datetime
 import time
 
 
-def get_unix_time_tuple(date=datetime.datetime.now()):
+def get_unix_time_tuple(date=datetime.datetime.now(), millisecond=False):
     """获得unix 时间戳"""
-    return time.mktime(date.timetuple())
+    second = str(int(time.mktime(date.timetuple())))
+    return second+get_random_num(3) if millisecond else second
 
 
 def get_date_from_time_tuple(unix_time=get_unix_time_tuple(), formatter='%Y-%m-%d %H:%M:%S') -> time:
