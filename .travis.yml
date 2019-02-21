@@ -7,10 +7,10 @@ python: 3.6
 # 先安装依赖
 before_install: pip install pipenv
 install:
-  - pipenv install
+  - pipenv install --skip-lock
 
 # 指定测试的程序 如果是true 则默认为通过
-script: true
+script: pytest tests/
 
 branches:
   only:

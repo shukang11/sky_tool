@@ -120,3 +120,6 @@ fabfile.py
 
 # temp files
 uploads/files/
+
+# test files
+data-test.sqlite

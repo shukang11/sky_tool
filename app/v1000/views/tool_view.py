@@ -11,7 +11,7 @@ from ..views import api
 from app.utils import response_succ, CommonError
 
 
-@api.route("/tool/encryption/<string:encrypt_type>", methods=["POST"])
+@api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
     """
     指定加密方式

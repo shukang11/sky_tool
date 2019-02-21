@@ -55,6 +55,7 @@ def create_app(env: str) -> Flask:
     configure_uploads(app, fileStorage)
     create_table(env, app)
     # 开启定时任务
-    scheduler.add_job(log, 'interval', seconds=1000)
-    scheduler.start()
+    if env == "production":
+        scheduler.add_job(log, 'interval', seconds=1000)
+        scheduler.start()
     return app
