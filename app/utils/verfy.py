@@ -12,7 +12,7 @@ def login_require(func):
     """
     @wraps(func)
     def decorator_view(*args, **kwargs):
-        params = request.values
+        params = request.values or request.get_json() or {}
         token = params.get("token")
         if not token:
             return CommonError.get_error(43000)

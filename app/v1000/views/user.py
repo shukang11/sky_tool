@@ -26,7 +26,7 @@ def register():
 
 @api.route("/user/login", methods=["POST"])
 def login():
-    params = request.values
+    params = request.values or request.get_json() or {}
     email = params.get("email")
     password = params.get("password")
     exsist_user: User = db.session.query(User).filter_by(email=email, password=password).first()
@@ -71,7 +71,7 @@ def user_info():
 @login_require
 def set_nickname():
     user: User = g.current_user
-    params = request.values
+    params = request.values or request.get_json() or {}
     if request.method == "GET":
         return response_succ(body={"nickname": user.nickname or ""})
 

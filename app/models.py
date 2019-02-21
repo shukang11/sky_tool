@@ -94,8 +94,7 @@ class TodoModel(db.Model, BaseModel):
     todo_id = Column(
         INTEGER, 
         Sequence(start=1, increment=1, name="todo_id_sep"), 
-        primary_key=True, 
-        autoincrement=True
+        primary_key=True
         )
     todo_title =Column(String, nullable=True)
     add_time = Column(String(20), nullable=True)
