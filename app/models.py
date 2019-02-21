@@ -34,11 +34,11 @@ class BaseModel():
             db.session.delete(self)
         db.session.commit()
 
-
     @staticmethod
     def query_all(Model):
         items = db.session.query(Model).all()
         return items or []
+
 
 @addModel
 class User(db.Model, BaseModel):
@@ -48,8 +48,9 @@ class User(db.Model, BaseModel):
     email = db.Column(db.String(255), unique=True)
     nickname = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255))
-    status = db.Column(db.SMALLINT, default=0) # 用户状态
-    token = db.Column(String(64), nullable=True) # 用本地的token ，用来重新获得请求 token 的 token
+    status = db.Column(db.SMALLINT, default=0)  # 用户状态
+    # 用本地的 token ，用来重新获得请求 token 的 token
+    token = db.Column(String(64), nullable=True)
 
     @classmethod
     def get_user(cls, user_id=None, token=None):
@@ -71,7 +72,8 @@ class FileModel(db.Model, BaseModel):
 
     __tablename__ = "bao_file"
 
-    file_id = Column(INTEGER, Sequence(start=1, increment=1, name="file_id_sep"), primary_key=True, autoincrement=True)  # 主键
+    file_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="file_id_sep"), primary_key=True, autoincrement=True)  # 主键
     file_hash = Column(String, nullable=False)
     file_name = Column(String, nullable=True)
     file_type = Column(String, nullable=True)
@@ -82,22 +84,20 @@ class LoginRecord(db.Model, BaseModel):
 
     __tablename__ = "bao_login_record"
 
-    record_id = Column(INTEGER, Sequence(start=1, increment=1, name="record_id_sep"), primary_key=True, autoincrement=True)
+    record_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                         name="record_id_sep"), primary_key=True, autoincrement=True)
     user_id = Column(INTEGER)
     login_time = Column(String, nullable=True)
     log_ip = Column(String(20), nullable=True)
+
 
 @addModel
 class TodoModel(db.Model, BaseModel):
     __tablename__ = "bao_todo"
 
-    todo_id = Column(
-        INTEGER, 
-        Sequence(start=1, increment=1, name="todo_id_sep"), 
-        primary_key=True
-        )
-    todo_title =Column(String, nullable=True)
+    todo_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="todo_id_sep"), primary_key=True, autoincrement=True)
+    todo_title = Column(String, nullable=True)
     add_time = Column(String(20), nullable=True)
-    bind_user_id = db.Column(db.Integer, primary_key=True)
-    todo_state = Column(SMALLINT, nullable=True) # 1 创建 2 完成 3 删除
-    
+    bind_user_id = db.Column(INTEGER, nullable=True)
+    todo_state = Column(SMALLINT, nullable=True)  # 1 创建 2 完成 3 删除

@@ -18,6 +18,7 @@ def app():
 def client(app):
     return app.test_client()
 
+
 class TestUser(object):
     def setup_method(self):
         self._email = "123456789@qq.com"
