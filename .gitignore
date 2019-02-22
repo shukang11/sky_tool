@@ -123,3 +123,5 @@ uploads/files/
 
 # test files
 data-test.sqlite
+data-dev.sqlite
+dump.rdb
