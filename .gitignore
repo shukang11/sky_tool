@@ -125,3 +125,6 @@ uploads/files/
 data-test.sqlite
 data-dev.sqlite
 dump.rdb
+
+# pycharm cache
+__pycache__/
