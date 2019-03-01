@@ -122,6 +122,9 @@ fabfile.py
 uploads/files/
 
 # test files
-data-test.sqlite
+data-dev.sqlite
 data-dev.sqlite
 dump.rdb
+
+# pycharm cache
+__pycache__/

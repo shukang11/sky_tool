@@ -18,7 +18,7 @@ class ApiError():
 class CommonError(ApiError):
 
     @classmethod
-    def get_error(cls, error_code):
+    def get_error(cls, error_code: int):
         switcher = {
             # 未知错误
             9999: response_error(error_code=9999, msg="unknown_error", http_code=400),

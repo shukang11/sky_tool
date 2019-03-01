@@ -6,10 +6,9 @@ from app.utils import login_require
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
-@app.route('/', methods=['GET'])
-@login_require
-def routeMap():
-    return render_template("index.html")
+@app.route('/<string:file>', methods=['GET'])
+def routeMap(file: str):
+    return render_template(file)
 
 @app.route('/test', methods=['GET', 'POST'])
 def on_test():

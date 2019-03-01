@@ -7,6 +7,7 @@ import pytest
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from app import create_app
+from app.command.email import Mail, Message
 
 @pytest.fixture("module")
 def app():
@@ -31,3 +32,12 @@ def test_sha512(client):
     assert rv.json["source"] == "123456"
     assert rv.json["type"] == "sha512"
     assert rv.json["target"] == "ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413"
+
+# def test_mail():
+#     user = "sunshukang30@163.com"
+#     password = "a12345678" # 授权码
+#     receivers = ["804506054@qq.com", "2332532718@qq.com"]
+#     sender = user
+#     mail = Mail("smtp.163.com", user, password, 465,  True, sender, 10)
+#     message = Message(subject="我是测试主题", recipients=receivers, body="测试Body", sender=sender)
+#     mail.send(message)
