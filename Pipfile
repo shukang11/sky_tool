@@ -27,6 +27,8 @@ numpy = "*"
 pandas = "*"
 "flake8" = "*"
 fabric = "*"
+gevent = "*"
+flask-socketio = "*"
 
 
 [dev-packages]
