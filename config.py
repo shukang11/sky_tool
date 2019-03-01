@@ -31,8 +31,13 @@ class Config:
 
     @classmethod
     def init_app(app, *args, **kwargs):
+        filename=os.path.join(Config.LOGGING_DIR, 'debug.log')
+        if not os.path.exists(filename):
+            os.makedirs(Config.LOGGING_DIR)
+            open(filename, 'w').close()
+            
         logging.basicConfig(
-            filename=os.path.join(Config.LOGGING_DIR, 'debug.log'), 
+            filename=filename, 
             level=logging.WARNING
             )
 
