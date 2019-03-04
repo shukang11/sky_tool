@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='jquery.min.js') }}"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='socket.io.min.js') }}"
+    ></script>
+  </head>
+  <body>
+    <h2>WebSokect</h2>
+    <form id="emit" method="POST" action="#">
+      <input
+        type="text"
+        name="emit_data"
+        id="emit_data"
+        placeholder="Message"
+      />
+      <input type="submit" value="Echo" />
+    </form>
+    <div id="log"></div>
+
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        namespace = "";
+        path =
+          location.protocol +
+          "//" +
+          document.domain +
+          ":" +
+          location.port +
+          namespace;
+        var socket = io.connect(path);
+
+        socket.on("connect", function() {
+          // 连接回调
+          socket.emit("client_event", { data: "connected!" });
+        });
+
+        socket.on("server_response", function(msg) {
+          $("#log").append(
+            "<br>" +
+              $("<div/>")
+                .text("Received #" + ": " + msg.data)
+                .html()
+          );
+        });
+
+        $("form#emit").submit(function(event) {
+          socket.emit("client_event", { data: $("#emit_data").val() });
+          return false;
+        });
+      });
+    </script>
+  </body>
+</html>

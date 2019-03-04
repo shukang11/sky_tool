@@ -8,11 +8,14 @@ from flask import Flask, request, jsonify, g, render_template, current_app
 from flask_uploads import UploadSet, DEFAULTS
 import redis
 from apscheduler.schedulers.background import BackgroundScheduler
+from flask_socketio import SocketIO
 
 # 定时执行
 scheduler = BackgroundScheduler()
 
 db = SQLAlchemy()
+
+socketio = SocketIO()
 
 fileStorage = UploadSet(extensions=DEFAULTS)
 
@@ -24,6 +27,6 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "TEXT", "INTEGER", "DECIMAL", "SMALLINT",
            "NoResultFound", "MultipleResultsFound",
            "UnmappedColumnError", "Sequence",
-           "Flask", "request", "redisClient", "db",
+           "Flask", "socketio", "request", "redisClient", "db",
            "fileStorage", "jsonify", "g", "render_template",
            "scheduler", "current_app"]
