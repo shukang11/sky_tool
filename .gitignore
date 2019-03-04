@@ -120,7 +120,7 @@ dmypy.json
 fabfile.py
 
 # temp files
-uploads/files/
+uploads/
 
 # test files
 data-dev.sqlite
