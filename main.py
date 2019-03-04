@@ -1,5 +1,5 @@
 import os
-from app import create_app
+from app import create_app as create_main_app
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.serving import run_simple
 
@@ -8,7 +8,7 @@ from app.utils.response_factory import response_succ
 from app.utils import login_require
 
 
-main_app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+main_app = create_main_app(os.getenv('FLASK_CONFIG') or 'default')
 
 application = DispatcherMiddleware(main_app, {
 })
