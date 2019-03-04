@@ -22,7 +22,7 @@ def encryption(encrypt_type: str = "md5"):
     'shake_128', 'shake_256'
     :return:
     """
-    params = request.values
+    params = request.values  or request.get_json() or {}
     source = params.get("source")
     if not source:
         return CommonError.get_error(40000)

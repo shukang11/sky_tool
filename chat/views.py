@@ -8,7 +8,7 @@ page = Blueprint("page", __name__)
 def handle_client_event(json):
     emit("server_response", {'data': str(json)})
 
-@page.route("/<string:file>")
+@page.route("/<string:file>", methods=["GET"])
 def render_file(file="index.html"):
     return render_template(file)
 
