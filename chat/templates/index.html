@@ -29,25 +29,33 @@
 
     <script type="text/javascript" charset="utf-8">
       $(document).ready(function() {
-        var socket = io.connect("http://0.0.0.0");
+        namespace = "";
+        path =
+          location.protocol +
+          "//" +
+          document.domain +
+          ":" +
+          location.port +
+          namespace;
+        var socket = io.connect(path);
 
         socket.on("connect", function() {
           // 连接回调
-          socket.emit("connect_event", { data: "connected!" });
+          socket.emit("client_event", { data: "connected!" });
+        });
 
-          socket.on("server_response", function(msg) {
-            $("#log").append(
-              "<br>" +
-                $("<div/>")
-                  .text("Received #" + ": " + msg.data)
-                  .html()
-            );
-          });
+        socket.on("server_response", function(msg) {
+          $("#log").append(
+            "<br>" +
+              $("<div/>")
+                .text("Received #" + ": " + msg.data)
+                .html()
+          );
+        });
 
-          $("form#emit").submit(function(event) {
-            socket.emit("client_event", { data: $("#emit_data").val() });
-            return false;
-          });
+        $("form#emit").submit(function(event) {
+          socket.emit("client_event", { data: $("#emit_data").val() });
+          return false;
         });
       });
     </script>

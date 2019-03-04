@@ -19,3 +19,7 @@
 ## 3.使用 gunicorn 启动
 
 `gunicorn -c gunicorn_config.py main:app`
+
+如果想使用 eventlet
+
+`gunicorn --worker-class eventlet -c gunicorn_config.py main:app`
