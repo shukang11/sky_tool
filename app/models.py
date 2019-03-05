@@ -110,7 +110,9 @@ class RssModel(db.Model, BaseModel):
     rss_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="rss_id_sep"), primary_key=True, autoincrement=True)
     rss_link = Column(String, nullable=True)
+    rss_subtitle = Column(String, nullable=True)
     add_time = Column(String(20), nullable=True)
+    rss_version = Column(String(10), nullable=True)
     rss_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
 
     def __init__(self, link: str, add_time: str=None):
@@ -135,3 +137,26 @@ class RssUserModel(db.Model,  BaseModel):
         self.rss_id = rss_id
         self.rss_user_state = 1
         self.add_time = add_time or get_unix_time_tuple()
+
+@addModel
+class RssContentModel(db.Model, BaseModel):
+
+    __tablename__ = "bao_rss_content"
+
+    content_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="content_id_sep"), primary_key=True, autoincrement=True)
+    content_link = Column(String, nullable=True)
+    content_title = Column(String, nullable=True)
+    content_description = Column(String, nullable=True)
+    add_time = Column(String(20), nullable=True)
+    content_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+    content_attachment = Column(String, nullable=True)
+
+    def __init__(self, link: str, title: str, description: str, attachment: str, add_time: str=None):
+        self.content_link = link
+        self.content_title = title
+        self.content_description = description
+        self.content_attachment = attachment
+        self.add_time = add_time or get_unix_time_tuple()
+        self.content_state = 1
+    

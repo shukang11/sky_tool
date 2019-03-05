@@ -4,7 +4,7 @@ from chat import socketio
 
 page = Blueprint("page", __name__)
 
-@socketio.on("client_event")
+@socketio.on("client_event") # 应该是会独占一个端口，后续需要修改
 def handle_client_event(json):
     emit("server_response", {'data': str(json)})
 

@@ -38,6 +38,7 @@ def add_rss_source():
         return response_succ(body=result)
     except Exception as e:
         db.session.rollback()
+        print(e)
         return CommonError.get_error(9999)
     
 
@@ -56,4 +57,13 @@ def list_rss():
             "rss_link": rss.rss_link,
             "rss_state": rss.rss_state
         })
+    return response_succ(body=result)
+
+
+@api.route("/rss/parse", methods=["POST", "GET"])
+def parser_rss():
+    params = request.values or request.get_json() or {}
+    source = params.get("source")
+    from app.command.rss import parser_feed
+    result = parser_feed(source)
     return response_succ(body=result)

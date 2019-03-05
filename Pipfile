@@ -30,6 +30,7 @@ fabric = "*"
 gevent = "*"
 flask-socketio = "*"
 eventlet = "*"
+feedparser = "*"
 
 
 [dev-packages]
