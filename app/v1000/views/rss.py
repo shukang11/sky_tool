@@ -46,8 +46,7 @@ def add_rss_source():
 @login_require
 def list_rss():
     params = request.values or request.get_json() or {}
-    all_rss = db.session.query(RssModel).filter(
-        RssModel.bind_user_id == g.current_user.id).all()
+    all_rss = db.session.query(RssModel).filter(RssModel.rss_id == RssUserModel.rss_id).filter(RssUserModel.user_id == g.current_user.id).all()
     result = []
     if not all_rss:
         return CommonError.error_toast(msg="没有订阅")
@@ -55,7 +54,6 @@ def list_rss():
         result.append({
             "rss_id": rss.rss_id,
             "rss_link": rss.rss_link,
-            "rss_state": rss.rss_state
         })
     return response_succ(body=result)
 
