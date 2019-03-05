@@ -110,13 +110,28 @@ class RssModel(db.Model, BaseModel):
     rss_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="rss_id_sep"), primary_key=True, autoincrement=True)
     rss_link = Column(String, nullable=True)
-    bind_user_id = Column(INTEGER, nullable=True)
     add_time = Column(String(20), nullable=True)
-    rss_state = Column(SMALLINT, nullable=True)  # 1 创建 2 完成 3 删除
+    rss_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
 
-    def __init__(self, link: str, user_id: int, add_time: str=None):
+    def __init__(self, link: str, add_time: str=None):
         self.rss_link = link
-        self.bind_user_id = user_id
         self.rss_state = 1
         self.add_time = add_time or get_unix_time_tuple()
     
+
+@addModel
+class RssUserModel(db.Model,  BaseModel):
+    __tablename__ = "bao_rss_user"
+
+    rss_user_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="rss_user_id_sep"), primary_key=True, autoincrement=True)
+    user_id = Column(INTEGER, nullable=False)
+    rss_id = Column(INTEGER, nullable=False)
+    add_time = Column(String(20), nullable=True)
+    rss_user_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+
+    def __init__(self, user_id: int, rss_id: int, add_time: str=None):
+        self.user_id = user_id
+        self.rss_id = rss_id
+        self.rss_user_state = 1
+        self.add_time = add_time or get_unix_time_tuple()

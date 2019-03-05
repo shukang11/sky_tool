@@ -27,6 +27,6 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "TEXT", "INTEGER", "DECIMAL", "SMALLINT",
            "NoResultFound", "MultipleResultsFound",
            "UnmappedColumnError", "Sequence",
-           "Flask", "socketio", "request", "redisClient", "db",
+           "Flask", "socketio", "request", "redisClient", "db", "Table",
            "fileStorage", "jsonify", "g", "render_template",
            "scheduler", "current_app"]
