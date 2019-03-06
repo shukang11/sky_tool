@@ -6,9 +6,19 @@ root_dir = os.path.abspath((os.path.dirname(__file__)))
 class Config:
     # 开启跨站请求伪造防护
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
+    """SQLALCHEMY配置"""
     SQLALCHEMY_COMMIT_ON_TEARDOWN = False
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+    """Celery 配置"""
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+    BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_ACCEPT_CONTENT=['json']
+    CELERY_TIMEZONE='Asia/Shanghai'
+
 
     """配置上传文件相关"""
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -50,7 +60,7 @@ class DevelopmentConfig(Config):
     # 'mysql://root:123456@localhost/tree_appdev'
     SERVICE_TOKEN_SUFFIX = 'im_token_suffix'
     # 打开数据库语句输出
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
     # 分页数量
     PAGE_LIMIT = 11
 

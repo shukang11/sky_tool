@@ -1,5 +1,6 @@
 import sys
 from os import path
+import logging
 
 from flask import Flask
 import pytest
@@ -41,3 +42,29 @@ def test_sha512(client):
 #     mail = Mail("smtp.163.com", user, password, 465,  True, sender, 10)
 #     message = Message(subject="我是测试主题", recipients=receivers, body="测试Body", sender=sender)
 #     mail.send(message)
+
+
+def test_logging():
+    logger_name = "example"
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.DEBUG)
+
+    # create file handle
+    log_path = "./test_log.log"
+    file_handle = logging.FileHandler(log_path)
+    file_handle.setLevel(logging.WARNING)
+
+    # create formatter
+    formatter = "%(asctime)-15s %(levelname)s %(filename)s %(lineno)d %(process)d %(message)s"
+    date_formatter = "%a %d %b %Y %H:%M:%S"
+    formatter = logging.Formatter(formatter, date_formatter)
+
+    # add handler and formatter to logger
+    file_handle.setFormatter(formatter)
+    logger.addHandler(file_handle)
+
+    logger.debug("debuge message")
+    logger.info("info message")
+    logger.warning("warning message")
+    logger.error("error message")
+    logger.critical("critical message")
