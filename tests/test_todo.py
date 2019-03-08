@@ -10,7 +10,7 @@ class TestTodo(TestBase):
             "title": test_add_title,
             "token": token
         }
-        rv = self._client.post("/api/v1000/todo/add", json=params)
+        rv = self._client.post("/api/todo/add", json=params)
         assert rv.status_code == 200
         assert rv.json["todo_id"] != ""
 
@@ -21,14 +21,14 @@ class TestTodo(TestBase):
             "title": test_add_title,
             "token": token
         }
-        rv = self._client.post("/api/v1000/todo/add", json=params)
+        rv = self._client.post("/api/todo/add", json=params)
         assert rv.status_code == 200
         assert rv.json["todo_id"] != ""
         return (token, rv.json["todo_id"])
 
     def test_finishtodo(self):
         token, todo_id = self.get_todo("test_finish_todo")
-        rv = self._client.post("/api/v1000/todo/finish", json={
+        rv = self._client.post("/api/todo/finish", json={
             "todo_id": todo_id,
             "token": token
         })
@@ -38,7 +38,7 @@ class TestTodo(TestBase):
 
     def test_undotodo(self):
         token, todo_id = self.get_todo("test_undo_title")
-        rv = self._client.post("/api/v1000/todo/undo", json={
+        rv = self._client.post("/api/todo/undo", json={
             "todo_id": todo_id,
             "token": token
         })
@@ -48,7 +48,7 @@ class TestTodo(TestBase):
 
     def test_removetodo(self):
         token, todo_id = self.get_todo("test_remove_title")
-        rv = self._client.post("/api/v1000/todo/remove", json={
+        rv = self._client.post("/api/todo/remove", json={
             "todo_id": todo_id,
             "token": token
         })

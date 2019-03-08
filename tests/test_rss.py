@@ -9,7 +9,7 @@ class TestRss(TestBase):
             "source": rss_link,
             "token": token
         }
-        rv = self._client.post("/api/v1000/rss/add", json=params)
+        rv = self._client.post("/api/rss/add", json=params)
         assert rv.status_code == 200
         assert rv.json["rss_id"] != None
 
@@ -18,5 +18,5 @@ class TestRss(TestBase):
     params = {
         "token": token
     }
-    rv = self._client.post("/api/v1000/rss/limit", json=params)
+    rv = self._client.post("/api/rss/limit", json=params)
     assert rv.status_code == 200

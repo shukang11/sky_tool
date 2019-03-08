@@ -19,19 +19,15 @@ records = "*"
 celery = "*"
 apscheduler = "*"
 flask-uploads = "*"
-numpy = "*"
-gevent = "*"
-flask-socketio = "*"
 feedparser = "*"
 
 
 [dev-packages]
 
 mypy = "*"
-pylint = "*"
 "flake8" = "*"
-nose = "*"
 pytest = "*"
+nose = "*"
 
 
 [requires]

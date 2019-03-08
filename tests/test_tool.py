@@ -21,7 +21,7 @@ def client(app):
 
 
 def test_md5(client):
-    rv = client.get("/api/v1000/tool/encryption/md5?source=123456")
+    rv = client.get("/api/tool/encryption/md5?source=123456")
     assert rv.status_code == 200
     assert rv.json["source"] == "123456"
     assert rv.json["type"] == "md5"

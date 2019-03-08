@@ -1,8 +1,6 @@
-from flask_uploads import configure_uploads
-from app.utils.ext import Flask, db, fileStorage, scheduler, current_app
+from app.utils.ext import Flask, db, scheduler, current_app
 from config import config, Config, root_dir
 import os
-
 
 def log():
     current_app.logger.debug("scheduler is running")
@@ -42,7 +40,6 @@ def create_table(config_name, app):
         with app.app_context():
             db.create_all()
 
-
 def create_app(env: str) -> Flask:
     assert(type(env) is str)
     config_obj = config[env]
@@ -52,7 +49,6 @@ def create_app(env: str) -> Flask:
     config_obj.init_app(app)
     # 注册插件
     register_blueprint(app)
-    configure_uploads(app, fileStorage)
     create_table(env, app)
     # 开启定时任务
     if env == "production":
