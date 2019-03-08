@@ -1,20 +1,22 @@
-from app.utils.ext import Flask, db, scheduler, current_app
+from app.utils.ext import Flask, db, scheduler, current_app, socket_app
 from config import config, Config, root_dir
 import os
 
 def log():
     current_app.logger.debug("scheduler is running")
 
-
 __all__ = ['create_app']
 
 route_list = []
+
+@socket_app.on('rec_msg')
+def handle_client(message):
+    socket_app.emit('resp_msg', {'data': 'i hear you'})
 
 
 def fetch_route(blueprint, prefix=None):
     t = (blueprint, prefix)
     route_list.append(t)
-
 
 def register_blueprint(app):
     app_dir = os.path.join(root_dir, 'app')
@@ -46,6 +48,7 @@ def create_app(env: str) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_obj)
     db.init_app(app)
+    socket_app.init_app(app)
     config_obj.init_app(app)
     # 注册插件
     register_blueprint(app)

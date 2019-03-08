@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script type="text/javascript" src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+</head>
+<body>
+    <h1>Socket Demo</h1>
+    <p id="log"></p>
+    <button id="background">Execute</button>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var namespace = '/task';
+        socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('resp_msg', function(msg) {
+            console.log('rec' + msg.data);
+            $('#log').append('Rec: ' + msg.data + '<br>')
+        })
+    });
+
+    $('#background').on('click', function() {
+        socket.emit('rec_msg', {data: 'im connected'})
+    })
+    </script>
+</body>
+</html>
