@@ -11,14 +11,6 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-    """Celery 配置"""
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-    BROKER_URL = 'redis://localhost:6379/0'
-    CELERY_TASK_SERIALIZER = 'json'
-    CELERY_RESULT_SERIALIZER = 'json'
-    CELERY_ACCEPT_CONTENT=['json']
-    CELERY_TIMEZONE='Asia/Shanghai'
-
 
     """配置上传文件相关"""
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')

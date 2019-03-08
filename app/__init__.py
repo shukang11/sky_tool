@@ -1,5 +1,5 @@
 from flask_uploads import configure_uploads
-from app.utils.ext import Flask, db, fileStorage, scheduler, current_app, celery_app
+from app.utils.ext import Flask, db, fileStorage, scheduler, current_app
 from config import config, Config, root_dir
 import os
 
@@ -49,7 +49,6 @@ def create_app(env: str) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_obj)
     db.init_app(app)
-    celery_app.config_from_object(config_obj)
     config_obj.init_app(app)
     # 注册插件
     register_blueprint(app)
