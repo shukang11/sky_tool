@@ -1,13 +1,14 @@
 from app.utils.ext import INTEGER, \
     TEXT, SMALLINT, Sequence, FLOAT, String, Column, \
-    ForeignKey, DECIMAL, db
+    ForeignKey, DECIMAL, db, INTEGER
+from app.utils.strings import get_unix_time_tuple
 
 
 """
 doc: http://docs.jinkan.org/docs/flask-sqlalchemy/models.html
 """
 
-__all__ = ['User', 'FileModel']
+__all__ = ['User', 'FileModel', 'LoginRecord', 'TodoModel', 'RssModel']
 
 # 对外展示的
 tables = {}
@@ -44,13 +45,13 @@ class BaseModel():
 class User(db.Model, BaseModel):
     __tablename__ = "bao_user"
 
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True)
-    nickname = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255))
-    status = db.Column(db.SMALLINT, default=0)  # 用户状态
+    id = Column(INTEGER, primary_key=True)
+    email = Column(String(255), unique=True)
+    nickname = Column(String(255), nullable=True)
+    password = Column(String(255))
+    status = Column(SMALLINT, default=0)  # 用户状态
     # 用本地的 token ，用来重新获得请求 token 的 token
-    token = db.Column(String(64), nullable=True)
+    token = Column(String(64), nullable=True)
 
     @classmethod
     def get_user(cls, user_id=None, token=None):
@@ -99,5 +100,63 @@ class TodoModel(db.Model, BaseModel):
                                        name="todo_id_sep"), primary_key=True, autoincrement=True)
     todo_title = Column(String, nullable=True)
     add_time = Column(String(20), nullable=True)
-    bind_user_id = db.Column(INTEGER, nullable=True)
+    bind_user_id = Column(INTEGER, nullable=True)
     todo_state = Column(SMALLINT, nullable=True)  # 1 创建 2 完成 3 删除
+
+@addModel
+class RssModel(db.Model, BaseModel):
+    __tablename__ = "bao_rss"
+
+    rss_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="rss_id_sep"), primary_key=True, autoincrement=True)
+    rss_link = Column(String, nullable=True)
+    rss_subtitle = Column(String, nullable=True)
+    add_time = Column(String(20), nullable=True)
+    rss_version = Column(String(10), nullable=True)
+    rss_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+
+    def __init__(self, link: str, add_time: str=None):
+        self.rss_link = link
+        self.rss_state = 1
+        self.add_time = add_time or get_unix_time_tuple()
+    
+
+@addModel
+class RssUserModel(db.Model,  BaseModel):
+    __tablename__ = "bao_rss_user"
+
+    rss_user_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="rss_user_id_sep"), primary_key=True, autoincrement=True)
+    user_id = Column(INTEGER, nullable=False)
+    rss_id = Column(INTEGER, nullable=False)
+    add_time = Column(String(20), nullable=True)
+    rss_user_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+
+    def __init__(self, user_id: int, rss_id: int, add_time: str=None):
+        self.user_id = user_id
+        self.rss_id = rss_id
+        self.rss_user_state = 1
+        self.add_time = add_time or get_unix_time_tuple()
+
+@addModel
+class RssContentModel(db.Model, BaseModel):
+
+    __tablename__ = "bao_rss_content"
+
+    content_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="content_id_sep"), primary_key=True, autoincrement=True)
+    content_link = Column(String, nullable=True)
+    content_title = Column(String, nullable=True)
+    content_description = Column(String, nullable=True)
+    add_time = Column(String(20), nullable=True)
+    content_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+    content_attachment = Column(String, nullable=True)
+
+    def __init__(self, link: str, title: str, description: str, attachment: str, add_time: str=None):
+        self.content_link = link
+        self.content_title = title
+        self.content_description = description
+        self.content_attachment = attachment
+        self.add_time = add_time or get_unix_time_tuple()
+        self.content_state = 1
+    

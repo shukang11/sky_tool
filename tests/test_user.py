@@ -26,20 +26,20 @@ class TestUser(object):
 
     def test_register_on_error(self, client):
         password = getmd5("123456")
-        rv = client.post("/api/v1000/user/register", json={
+        rv = client.post("/api/user/register", json={
             "email": self._email,
             "password": password
         })
 
         password = getmd5("123456")
-        rv = client.post("/api/v1000/user/register", json={
+        rv = client.post("/api/user/register", json={
             "email": self._email,
             "password": password
         })
         assert rv.status_code == 400
 
     def test_login(self, client) -> str:
-        rv = client.post("/api/v1000/user/login", json={
+        rv = client.post("/api/user/login", json={
             "email": self._email,
             "password": self._password
         })
@@ -48,7 +48,7 @@ class TestUser(object):
 
     def test_user_info(self, client):
         token = self.test_login(client)
-        rv = client.post("/api/v1000/user/info", json={
+        rv = client.post("/api/user/info", json={
             "token": token
         })
         assert rv.status_code == 200
@@ -58,7 +58,7 @@ class TestUser(object):
     def test_nickname(self, client):
         token = self.test_login(client)
         test_nickname = "test_nickname"
-        rv = client.post("/api/v1000/user/nickname", json={
+        rv = client.post("/api/user/nickname", json={
             "token": token,
             "nickname": test_nickname
         })
@@ -66,7 +66,7 @@ class TestUser(object):
         assert rv.json["nickname"] == test_nickname
         assert rv.json["token"] == token
         assert rv.json["email"] == self._email
-        rv =client.get("/api/v1000/user/nickname", json={
+        rv =client.get("/api/user/nickname", json={
             "token": token
         })
         assert rv.status_code == 200
