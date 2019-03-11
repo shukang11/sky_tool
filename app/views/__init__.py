@@ -18,5 +18,5 @@ root = Blueprint('root', __name__)
 app.fetch_route(root, '/')
 
 @root.route('/<string:file>')
-def root_file_handle(file: str):
+def root_file_handle(file: str='index.html'):
     return render_template(file)
