@@ -43,7 +43,7 @@ def set_todo_state(todo_id: int, state: int) -> any:
     try to modify a todo_state, option (1, 2, 3)
 
     Args:
-        todo_id: the index of the todo item you wanna change.
+        todo_id: the id of the todo item you wanna change.
         state: state value, 1: undo, 2: done, 3: removed
 
     Returns:
