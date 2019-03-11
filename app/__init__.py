@@ -9,11 +9,6 @@ __all__ = ['create_app']
 
 route_list = []
 
-@socket_app.on('rec_msg')
-def handle_client(message):
-    socket_app.emit('resp_msg', {'data': 'i hear you'})
-
-
 def fetch_route(blueprint, prefix=None):
     t = (blueprint, prefix)
     route_list.append(t)

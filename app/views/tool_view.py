@@ -9,7 +9,7 @@ import hashlib
 from flask import request
 from ..views import api
 from app.utils import response_succ, CommonError
-
+from app.utils.ext import socket_app
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
@@ -38,3 +38,8 @@ def encryption(encrypt_type: str = "md5"):
     result_map["type"] = encrypt_type
     return response_succ(body=result_map)
 
+
+@socket_app.on('rec_client')
+def handle_client_message(msg):
+    print(msg['data'])
+    socket_app.emit('resp_server', {'data': 'i hear you' + str(msg['data'])})
