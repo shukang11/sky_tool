@@ -14,12 +14,12 @@
 
 ## 2. 安装依赖
 
-`pipenv install`
+`PIPENV_VENV_IN_PROJECT=true pipenv install --skip-lock`
 
 ## 3.使用 gunicorn 启动
 
-`gunicorn -c gunicorn_config.py main:app`
+`gunicorn -c gunicorn_config.py main:application`
 
 如果想使用 eventlet
 
-`gunicorn --worker-class eventlet -c gunicorn_config.py main:app`
+`gunicorn --worker-class eventlet -c gunicorn_config.py main:application`

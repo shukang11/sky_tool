@@ -124,7 +124,7 @@ uploads/
 
 # test files
 data-dev.sqlite
-data-test.sqlite
+# data-test.sqlite
 dump.rdb
 logs/
 

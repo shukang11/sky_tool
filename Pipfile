@@ -20,6 +20,8 @@ celery = "*"
 apscheduler = "*"
 flask-uploads = "*"
 feedparser = "*"
+flask-socketio = "*"
+eventlet = "*"
 
 
 [dev-packages]

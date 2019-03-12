@@ -12,6 +12,6 @@ application = DispatcherMiddleware(main_app, {})
 
 
 if __name__ == '__main__':
-    run_simple("0.0.0.0", port=8091, application=application, use_reloader=True, use_debugger=True)
-    # from chat import socketio
-    # socketio.run(chat_app, port=8091)
+    # run_simple("0.0.0.0", port=8091, application=application, use_reloader=True, use_debugger=True)
+    from app.utils.ext import socket_app
+    socket_app.run(main_app, port=8091, debug=True)
