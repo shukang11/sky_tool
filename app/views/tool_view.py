@@ -10,6 +10,7 @@ from flask import request
 from ..views import api
 from app.utils import response_succ, CommonError
 from app.utils.ext import socket_app
+from app.command.tasks import async_email_to
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
@@ -43,3 +44,23 @@ def encryption(encrypt_type: str = "md5"):
 def handle_client_message(msg):
     print(msg['data'])
     socket_app.emit('resp_server', {'data': 'i hear you' + str(msg['data'])})
+
+
+@api.route('/tool/email_to', methods=['GET', 'POST'])
+def email_to():
+    params = request.values  or request.get_json() or {}
+    subject = params.get('subject')
+    body = params.get('body')
+    recs = params.get('recipients')
+    if not subject or not body or not recs:
+        return CommonError.get_error(40000)
+    receivers = []
+    if isinstance(recs, str):
+        receivers.append(recs)
+    elif isinstance(recs, list):
+        receivers.extend(recs)
+
+    result = {}
+    result['recipients'] = receivers
+    async_email_to(subject=subject,body=body, recipients=receivers)
+    return response_succ(body=result)
