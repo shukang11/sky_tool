@@ -17,7 +17,7 @@ class TestBase(object):
             "email": self._email,
             "password": self._password
         }
-        rv = self._client.post("/api/v1000/user/login", json=params)
+        rv = self._client.post("/api/user/login", json=params)
         print(params)
         assert rv.status_code == 200
         return rv.json["token"] or ""

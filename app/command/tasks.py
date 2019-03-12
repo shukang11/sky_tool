@@ -8,7 +8,7 @@ def add(x, y):
     return x + y
 
 @celery_app.task
-def email(subject: str, body: str, recipients: list):
+def async_email_to(subject: str, body: str, recipients: list):
     user = "sunshukang30@163.com"
     password = "a12345678" # 授权码
     receivers = recipients
