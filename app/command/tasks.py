@@ -3,7 +3,7 @@ from app.utils.ext import celery_app
 from app.command.email import Mail, Message
 
 @celery_app.task
-def add(x, y):
+def add(x: int, y: int):
     time.sleep(5)
     return x + y
 

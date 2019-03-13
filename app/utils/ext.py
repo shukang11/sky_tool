@@ -11,6 +11,9 @@ import redis
 from apscheduler.schedulers.background import BackgroundScheduler
 from celery import Celery
 
+celery_app = Celery('app', include=['app.command.tasks'])
+celery_app.config_from_object("celery_config")
+
 # 定时执行
 scheduler = BackgroundScheduler()
 socket_app = SocketIO()
@@ -20,8 +23,6 @@ fileStorage = UploadSet(extensions=DEFAULTS)
 
 pool = redis.ConnectionPool(port=6379)
 redisClient = redis.Redis(connection_pool=pool)
-
-celery_app = Celery('app', include=['app.command.tasks'])
 
 __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "TEXT", "INTEGER", "DECIMAL", "SMALLINT",

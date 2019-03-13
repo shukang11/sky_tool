@@ -5,8 +5,6 @@ from werkzeug.serving import run_simple
 from app import create_app as create_main_app
 from app.utils.ext import celery_app
 
-celery_app.config_from_object("celery_config")
-
 main_app = create_main_app('default')
 application = DispatcherMiddleware(main_app, {})
 
