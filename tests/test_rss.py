@@ -14,9 +14,9 @@ class TestRss(TestBase):
         assert rv.json["rss_id"] != None
 
     def test_list_rss(self):
-    token = self.login()
-    params = {
-        "token": token
-    }
-    rv = self._client.post("/api/rss/limit", json=params)
-    assert rv.status_code == 200
+        token = self.login()
+        params = {
+            "token": token
+        }
+        rv = self._client.post("/api/rss/limit", json=params)
+        assert rv.status_code == 200
