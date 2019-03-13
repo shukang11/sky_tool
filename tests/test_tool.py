@@ -28,7 +28,7 @@ def test_md5(client):
     assert rv.json["target"] == "e10adc3949ba59abbe56e057f20f883e"
 
 def test_sha512(client):
-    rv = client.get("/api/v1000/tool/encryption/sha512?source=123456")
+    rv = client.get("/api/tool/encryption/sha512?source=123456")
     assert rv.status_code == 200
     assert rv.json["source"] == "123456"
     assert rv.json["type"] == "sha512"
