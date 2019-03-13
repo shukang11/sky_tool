@@ -4,7 +4,9 @@ from werkzeug.serving import run_simple
 
 from app import create_app as create_main_app
 from app.utils.ext import celery_app
+from celery import Celery
 
+celery_app = Celery('app', include=['app.command.tasks'])
 celery_app.config_from_object("celery_config")
 
 main_app = create_main_app('default')

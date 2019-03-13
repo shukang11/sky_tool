@@ -15,6 +15,7 @@ CELERY_TIMEZONE='Asia/Shanghai'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT=['json']
+CELERY_IGNORE_RESULT=False
 # 限制此类型的任务， 每分钟只处理10个
 CELERY_ANNOTATIONS = {
     'tasks.add': {'rate_limit': '10/m'}

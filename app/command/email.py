@@ -63,6 +63,7 @@ class Message(object):
     """Encapsulates an email message.
     :param subject: email subject header
     :param body: plain text message
+    :param recipients: recipients
     :param sender: email sender address
     :param date: send date
     :param charset: message character set
