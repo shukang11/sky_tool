@@ -9,7 +9,10 @@ from flask_uploads import UploadSet, DEFAULTS
 from flask_socketio import SocketIO
 import redis
 from apscheduler.schedulers.background import BackgroundScheduler
+from celery import Celery
 
+celery_app = Celery('app', include=['app.command.tasks'])
+celery_app.config_from_object("celery_config")
 
 # 定时执行
 scheduler = BackgroundScheduler()
