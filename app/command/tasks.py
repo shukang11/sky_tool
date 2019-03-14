@@ -22,13 +22,6 @@ class CallBackTask(Task):
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         return super(CallBackTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
-
-@celery.task(base=CallBackTask)
-def add(x: int, y: int, *args, **kwargs):
-    time.sleep(5)
-    result = x + y
-    return result
-
 @celery.task
 def async_email_to(subject: str, body: str, recipients: list):
     user = "sunshukang30@163.com"
@@ -45,4 +38,18 @@ def async_email_to(subject: str, body: str, recipients: list):
 
 @celery.task
 def async_parser_feed(url: str):
-    parser_feed(url)
+    return parser_feed(url)
+
+@celery.task(base=CallBackTask) # 指定回调
+def add(x: int, y: int, *args, **kwargs):
+    time.sleep(5)
+    result = x + y
+    return result
+
+@celery.task(bind=True) # 将上下文环境绑定到当前
+def mul(self, x: int, y: int):
+    print('Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r} callbacks: {0.callbacks!r}'.format(
+            self.request))
+    time.sleep(5)
+    result = x + y
+    return result

@@ -82,8 +82,9 @@ def query_task():
 # debug route
 @api.route('/tool/test_add', methods=['GET', 'POST'])
 def test_add():
+    from app.command.tasks import mul
     backend = str(request.scheme) + '://' + str(request.host) + '/' + url_for('api.task_parser_backend')
-    task = add.delay(x=1, y=5, callback=backend)
+    task = mul.delay(x=1, y=5)
     payload = {}
     payload['id'] = task.id
     return response_succ(body=payload)

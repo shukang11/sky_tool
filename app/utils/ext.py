@@ -15,36 +15,36 @@ from celery import Celery
 # celery_app = Celery('app', include=['app.command.tasks'])
 # celery_app.config_from_object("celery_config")
 
-class FlaskCelery(Celery):
+# class FlaskCelery(Celery):
 
-    def __init__(self, *args, **kwargs):
-        super(FlaskCelery, self).__init__(*args, **kwargs)
-        self.patch_task()
-        if 'app' in kwargs:
-            self.init_app(kwargs['app'])
+#     def __init__(self, *args, **kwargs):
+#         super(FlaskCelery, self).__init__(*args, **kwargs)
+#         self.patch_task()
+#         if 'app' in kwargs:
+#             self.init_app(kwargs['app'])
 
-    def patch_task(self):
-        TaskBase = self.Task
-        _celery = self
+#     def patch_task(self):
+#         TaskBase = self.Task
+#         _celery = self
 
-        class ContextTask(TaskBase):
-            abstract = True
+#         class ContextTask(TaskBase):
+#             abstract = True
 
-            def __call__(self, *args, **kwargs):
-                if flask.has_app_context():
-                    return TaskBase.__call__(self, *args, **kwargs)
-                else:
-                    with _celery.app.app_context():
-                        return TaskBase.__call__(self, *args, **kwargs)
+#             def __call__(self, *args, **kwargs):
+#                 if flask.has_app_context():
+#                     return TaskBase.__call__(self, *args, **kwargs)
+#                 else:
+#                     with _celery.app.app_context():
+#                         return TaskBase.__call__(self, *args, **kwargs)
         
-        self.Task = ContextTask
+#         self.Task = ContextTask
         
-    def init_app(self, app: Flask):
-        self.app = app
-        self.config_from_object(app.config)
+#     def init_app(self, app: Flask):
+#         self.app = app
+#         self.config_from_object(app.config)
 
-celery = FlaskCelery()
-
+celery = Celery()
+flask_app = Flask(__name__)
 # 定时执行
 scheduler = BackgroundScheduler()
 socket_app = SocketIO()
@@ -61,4 +61,4 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
            "fileStorage", "jsonify", "g", "render_template",
-           "scheduler", "current_app", "celery_app", "socket_app"]
+           "scheduler", "current_app", "socket_app", "celery", "flask_app"]
