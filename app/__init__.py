@@ -1,4 +1,4 @@
-from app.utils.ext import Flask, db, scheduler, current_app, socket_app
+from app.utils.ext import Flask, db, scheduler, current_app, socket_app, celery
 from config import config, Config, root_dir
 import os
 
@@ -37,15 +37,21 @@ def create_table(config_name, app):
         with app.app_context():
             db.create_all()
 
+def create_celery(app: Flask):
+    celery.init_app(app)
+    celery.config_from_object('celery_config')
+    return celery
+
 def create_app(env: str) -> Flask:
     assert(type(env) is str)
     config_obj = config[env]
     app = Flask(__name__)
     app.config.from_object(config_obj)
+    # 注册插件
+    celery = create_celery(app)
     db.init_app(app)
     socket_app.init_app(app)
     config_obj.init_app(app)
-    # 注册插件
     register_blueprint(app)
     create_table(env, app)
     # 开启定时任务

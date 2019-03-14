@@ -6,11 +6,12 @@
 
 """
 import hashlib
-from flask import request
+import json
+from flask import request, redirect, url_for
 from ..views import api
-from app.utils import response_succ, CommonError
-from app.utils.ext import socket_app
-from app.command.tasks import async_email_to
+from app.utils import response_succ, CommonError, login_require
+from app.utils.ext import socket_app, redisClient, db
+from app.command.tasks import async_email_to, add
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
@@ -45,8 +46,8 @@ def handle_client_message(msg):
     print(msg['data'])
     socket_app.emit('resp_server', {'data': 'i hear you' + str(msg['data'])})
 
-
 @api.route('/tool/email_to', methods=['GET', 'POST'])
+@login_require
 def email_to():
     params = request.values  or request.get_json() or {}
     subject = params.get('subject')
@@ -62,5 +63,41 @@ def email_to():
 
     result = {}
     result['recipients'] = receivers
-    async_email_to(subject=subject,body=body, recipients=receivers)
+    task = async_email_to.delay(subject=subject,body=body, recipients=receivers)
+    result['task_id'] = task.id
     return response_succ(body=result)
+
+@api.route('/tool/query_task', methods=['GET', 'POST'])
+@login_require
+def query_task():
+    params = request.values  or request.get_json() or {}
+    key = params.get('key') or 'celery*'
+    if not key:
+        return CommonError.get_error(40000)
+    result = redisClient.get('celery-task-meta-'+str(key))
+    reuslt = str(result, encoding='utf-8')
+    result = json.loads(result)
+    return response_succ(body=result)
+
+# debug route
+@api.route('/tool/test_add', methods=['GET', 'POST'])
+def test_add():
+    backend = str(request.scheme) + '://' + str(request.host) + '/' + url_for('api.task_parser_backend')
+    task = add.delay(x=1, y=5, callback=backend)
+    payload = {}
+    payload['id'] = task.id
+    return response_succ(body=payload)
+
+@api.route('/tool/parser_backend', methods=['GET', 'POST'])
+def task_parser_backend():
+    params = request.values or request.get_json() or {}
+    status = params.get('status')
+    result = params.get('result')
+    task_id = params.get('task_id')
+    trackback = params.get('trackback')
+    payload = {}
+    payload['status'] = status
+    payload['result'] = result
+    payload['task_id'] = task_id
+    payload['trackback'] = trackback
+    return response_succ(body=payload)

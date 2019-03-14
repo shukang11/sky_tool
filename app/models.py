@@ -159,4 +159,3 @@ class RssContentModel(db.Model, BaseModel):
         self.content_attachment = attachment
         self.add_time = add_time or get_unix_time_tuple()
         self.content_state = 1
-    
