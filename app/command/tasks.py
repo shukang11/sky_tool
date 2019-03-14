@@ -4,6 +4,7 @@ from app import celery
 from celery import Task
 from app.command.email import Mail, Message
 from app.command.rss import parser_feed
+from app.utils.ext import db
 
 class CallBackTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
@@ -38,7 +39,8 @@ def async_email_to(subject: str, body: str, recipients: list):
 
 @celery.task
 def async_parser_feed(url: str):
-    return parser_feed(url)
+    result = parser_feed(url)
+    return result
 
 @celery.task(base=CallBackTask) # 指定回调
 def add(x: int, y: int, *args, **kwargs):

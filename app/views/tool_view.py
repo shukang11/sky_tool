@@ -45,6 +45,7 @@ def encryption(encrypt_type: str = "md5"):
 def handle_client_message(msg):
     print(msg['data'])
     socket_app.emit('resp_server', {'data': 'i hear you' + str(msg['data'])})
+    
 
 @api.route('/tool/email_to', methods=['GET', 'POST'])
 @login_require
