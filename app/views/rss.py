@@ -59,9 +59,12 @@ def list_rss():
 
 
 @api.route("/rss/parse", methods=["POST", "GET"])
+@login_require
 def parser_rss():
     params = request.values or request.get_json() or {}
     source = params.get("source")
-    from app.command.rss import parser_feed
-    result = parser_feed(source)
+    from app.command.tasks import async_parser_feed
+    task = async_parser_feed.delay(source)
+    result = {}
+    result['task_id'] = task.id
     return response_succ(body=result)

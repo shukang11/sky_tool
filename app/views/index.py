@@ -4,6 +4,9 @@ from app.utils import login_require
 
 from app.utils.ext import request
 
+from flask import url_for
+from app.views.tool_view import task_parser_backend
+
 @api.route('/help', methods=['GET'])
 @login_require
 def index():
@@ -13,5 +16,10 @@ def index():
 @api.route('/test', methods=['GET', 'POST'])
 def test_f():
     params = request.values
-    print(params)
-    return response_succ(body={'rec': '/test', 'par': params})
+    payload = {}
+    payload['rec'] = request.url
+    payload['params'] = params
+    payload['host'] = request.host
+    payload['scheme'] = request.scheme
+    payload['url'] = url_for('api.task_parser_backend')
+    return response_succ(body=payload)

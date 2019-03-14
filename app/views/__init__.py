@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 import app
 
-api = Blueprint('api1_0', __name__)
+api = Blueprint('api', __name__)
 root = Blueprint('root', __name__)
 
 from app.views import index

@@ -3,6 +3,7 @@ from sqlalchemy.dialects.mssql import FLOAT, TEXT, INTEGER, DECIMAL, SMALLINT
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, \
     UnmappedColumnError
 from sqlalchemy import Sequence
+import flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, g, render_template, current_app
 from flask_uploads import UploadSet, DEFAULTS
@@ -11,9 +12,39 @@ import redis
 from apscheduler.schedulers.background import BackgroundScheduler
 from celery import Celery
 
-celery_app = Celery('app', include=['app.command.tasks'])
-celery_app.config_from_object("celery_config")
+# celery_app = Celery('app', include=['app.command.tasks'])
+# celery_app.config_from_object("celery_config")
 
+# class FlaskCelery(Celery):
+
+#     def __init__(self, *args, **kwargs):
+#         super(FlaskCelery, self).__init__(*args, **kwargs)
+#         self.patch_task()
+#         if 'app' in kwargs:
+#             self.init_app(kwargs['app'])
+
+#     def patch_task(self):
+#         TaskBase = self.Task
+#         _celery = self
+
+#         class ContextTask(TaskBase):
+#             abstract = True
+
+#             def __call__(self, *args, **kwargs):
+#                 if flask.has_app_context():
+#                     return TaskBase.__call__(self, *args, **kwargs)
+#                 else:
+#                     with _celery.app.app_context():
+#                         return TaskBase.__call__(self, *args, **kwargs)
+        
+#         self.Task = ContextTask
+        
+#     def init_app(self, app: Flask):
+#         self.app = app
+#         self.config_from_object(app.config)
+
+celery = Celery()
+flask_app = Flask(__name__)
 # 定时执行
 scheduler = BackgroundScheduler()
 socket_app = SocketIO()
@@ -30,4 +61,4 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
            "fileStorage", "jsonify", "g", "render_template",
-           "scheduler", "current_app", "celery_app", "socket_app"]
+           "scheduler", "current_app", "socket_app", "celery", "flask_app"]
