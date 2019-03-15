@@ -9,7 +9,7 @@ def parser_feed(feed_url: str):
     subtitle = feeds.feed.subtitle # 子标题
     result = []
     for item in feeds['entries']:
-        r = dict()
+        r = {}
         for k in item:
             r[k] = item[k]
         result.append(r)

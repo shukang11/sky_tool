@@ -10,7 +10,6 @@ from flask_uploads import UploadSet, DEFAULTS
 from flask_socketio import SocketIO
 import redis
 from apscheduler.schedulers.background import BackgroundScheduler
-from celery import Celery
 
 # celery_app = Celery('app', include=['app.command.tasks'])
 # celery_app.config_from_object("celery_config")
@@ -43,7 +42,6 @@ from celery import Celery
 #         self.app = app
 #         self.config_from_object(app.config)
 
-celery = Celery()
 flask_app = Flask(__name__)
 # 定时执行
 scheduler = BackgroundScheduler()
@@ -61,4 +59,4 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
            "fileStorage", "jsonify", "g", "render_template",
-           "scheduler", "current_app", "socket_app", "celery", "flask_app"]
+           "scheduler", "current_app", "socket_app", "flask_app"]

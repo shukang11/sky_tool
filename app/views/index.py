@@ -5,7 +5,6 @@ from app.utils import login_require
 from app.utils.ext import request
 
 from flask import url_for
-from app.views.tool_view import task_parser_backend
 
 @api.route('/help', methods=['GET'])
 @login_require

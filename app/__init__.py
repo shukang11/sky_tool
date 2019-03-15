@@ -1,4 +1,4 @@
-from app.utils.ext import Flask, db, scheduler, current_app, socket_app, celery, flask_app
+from app.utils.ext import Flask, db, scheduler, current_app, socket_app, flask_app
 from config import config, Config, root_dir
 import os
 
@@ -37,24 +37,12 @@ def create_table(config_name, app):
         with app.app_context():
             db.create_all()
 
-def create_celery(app: Flask):
-    celery.config_from_object('celery_config')
-    TaskBase = celery.Task
-    class ContextTask(TaskBase):
-        abstract = True
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-    celery.Task = ContextTask
-    return celery
-
 def create_app(env: str) -> Flask:
     assert(type(env) is str)
     config_obj = config[env]
     app = Flask(__name__)
     app.config.from_object(config_obj)
     # 注册插件
-    celery = create_celery(app)
     db.init_app(app)
     socket_app.init_app(app)
     config_obj.init_app(app)

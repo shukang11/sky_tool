@@ -1,4 +1,5 @@
 from flask import request
+from celery import Task
 from ..views import api
 from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require
 from app.utils.ext import g, db
@@ -68,3 +69,16 @@ def parser_rss():
     result = {}
     result['task_id'] = task.id
     return response_succ(body=result)
+
+@api.route('/rss/parser_backend', methods=['GET', 'POST'])
+def task_parser_backend():
+    params = request.values or request.get_json() or {}
+    status = params.get('status')
+    result = params.get('result')
+    task_id = params.get('task_id')
+    payload = {}
+    payload['status'] = status
+    payload['result'] = result
+    payload['task_id'] = task_id
+    payload['trackback'] = trackback
+    return response_succ(body=payload)
