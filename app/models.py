@@ -75,9 +75,9 @@ class FileModel(db.Model, BaseModel):
 
     file_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="file_id_sep"), primary_key=True, autoincrement=True)  # 主键
-    file_hash = Column(String, nullable=False)
-    file_name = Column(String, nullable=True)
-    file_type = Column(String, nullable=True)
+    file_hash = Column(String(64), nullable=False)
+    file_name = Column(String(255), nullable=True)
+    file_type = Column(String(32), nullable=True)
 
 
 @addModel
@@ -88,7 +88,7 @@ class LoginRecord(db.Model, BaseModel):
     record_id = Column(INTEGER, Sequence(start=1, increment=1,
                                          name="record_id_sep"), primary_key=True, autoincrement=True)
     user_id = Column(INTEGER)
-    login_time = Column(String, nullable=True)
+    login_time = Column(String(20), nullable=True)
     log_ip = Column(String(20), nullable=True)
 
 
@@ -98,7 +98,7 @@ class TodoModel(db.Model, BaseModel):
 
     todo_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="todo_id_sep"), primary_key=True, autoincrement=True)
-    todo_title = Column(String, nullable=True)
+    todo_title = Column(String(255), nullable=True)
     add_time = Column(String(20), nullable=True)
     bind_user_id = Column(INTEGER, nullable=True)
     todo_state = Column(SMALLINT, nullable=True)  # 1 创建 2 完成 3 删除
@@ -109,8 +109,8 @@ class RssModel(db.Model, BaseModel):
 
     rss_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="rss_id_sep"), primary_key=True, autoincrement=True)
-    rss_link = Column(String, nullable=True)
-    rss_subtitle = Column(String, nullable=True)
+    rss_link = Column(String(255), nullable=True)
+    rss_subtitle = Column(String(255), nullable=True)
     add_time = Column(String(20), nullable=True)
     rss_version = Column(String(10), nullable=True)
     rss_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
@@ -145,17 +145,15 @@ class RssContentModel(db.Model, BaseModel):
 
     content_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="content_id_sep"), primary_key=True, autoincrement=True)
-    content_link = Column(String, nullable=True)
-    content_title = Column(String, nullable=True)
-    content_description = Column(String, nullable=True)
+    content_base = Column(String(255), nullable=True)
+    content_link = Column(String(255), unique=True, nullable=True)
+    content_title = Column(String(255), nullable=True)
+    content_description = Column(TEXT, nullable=True)
     add_time = Column(String(20), nullable=True)
-    content_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
-    content_attachment = Column(String, nullable=True)
 
-    def __init__(self, link: str, title: str, description: str, attachment: str, add_time: str=None):
+    def __init__(self, link: str, baseurl: str, title: str, description: str, add_time: str=None):
         self.content_link = link
+        self.content_base = baseurl
         self.content_title = title
         self.content_description = description
-        self.content_attachment = attachment
         self.add_time = add_time or get_unix_time_tuple()
-        self.content_state = 1

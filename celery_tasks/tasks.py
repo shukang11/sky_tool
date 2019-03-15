@@ -3,9 +3,8 @@ import requests
 from celery_tasks import celery
 from celery import Task
 from celery_tasks.email import Mail, Message
-from celery_tasks.rss import parser_feed
-import records
-
+from celery_tasks.rss import parser_feed, parse_inner
+from app.utils import get_unix_time_tuple
 class CallBackTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
         print(str(args))
@@ -34,15 +33,10 @@ def async_email_to(subject: str, body: str, recipients: list):
                         recipients=receivers, body=body or "", sender=sender)
     mail.send(message)
 
-@celery.task(bind=True, default_retry_delay=300, max_retries=3)
+@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def async_parser_feed(url: str):
     result = parser_feed(url)
-    version = result['version']
-    title = result['title']
-    link = result['link']
-    subtitle = result['subtitle']
-    items = result['items']
-    print(items)
+    parse_inner(url, result)
     return result
 
 

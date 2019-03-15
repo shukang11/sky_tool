@@ -1,8 +1,17 @@
+import os
 from celery import Celery
+import records
+from config import config
 
+env = os.environ.get('FLASK_ENV')
+
+config_obj = config[env]
 
 celery = Celery('tasks')
-celery.config_from_object('celery_config')
+celery.config_from_object(config_obj)
+url = getattr(config_obj, 'SQLALCHEMY_DATABASE_URI')
+db = records.Database(url)
+
     # TaskBase = celery.Task
     # class ContextTask(TaskBase):
     #     abstract = True
