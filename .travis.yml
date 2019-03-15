@@ -12,6 +12,10 @@ install:
 # 指定测试的程序 如果是true 则默认为通过
 script: celery -A celery_tasks:celery worker -l info && pytest tests/
 
+env:
+ - PIPENV_VENV_IN_PROJECT=1
+ - FLASK_ENV=development
+
 branches:
   only:
     - master
