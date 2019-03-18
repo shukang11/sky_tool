@@ -11,7 +11,7 @@ from flask import request, redirect, url_for
 from ..views import api
 from app.utils import response_succ, CommonError, login_require
 from app.utils.ext import socket_app, redisClient, db
-from app.command.tasks import async_email_to, add
+from celery_tasks.tasks import async_email_to, add
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
@@ -83,23 +83,9 @@ def query_task():
 # debug route
 @api.route('/tool/test_add', methods=['GET', 'POST'])
 def test_add():
-    from app.command.tasks import mul
+    from celery_tasks.tasks import mul
     backend = str(request.scheme) + '://' + str(request.host) + '/' + url_for('api.task_parser_backend')
-    task = mul.delay(x=1, y=5)
+    task = mul.delay(x=1, y=5, callback=backend)
     payload = {}
     payload['id'] = task.id
-    return response_succ(body=payload)
-
-@api.route('/tool/parser_backend', methods=['GET', 'POST'])
-def task_parser_backend():
-    params = request.values or request.get_json() or {}
-    status = params.get('status')
-    result = params.get('result')
-    task_id = params.get('task_id')
-    trackback = params.get('trackback')
-    payload = {}
-    payload['status'] = status
-    payload['result'] = result
-    payload['task_id'] = task_id
-    payload['trackback'] = trackback
     return response_succ(body=payload)

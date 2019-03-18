@@ -8,7 +8,7 @@ import pytest
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from app import create_app
-from app.command.email import Mail, Message
+from celery_tasks.email import Mail, Message
 
 @pytest.fixture("module")
 def app():

@@ -15,7 +15,7 @@ from datetime import timedelta
 # 我们之前创建的几个测试用函数，都在handlers.async_tasks和handlers.schedules中
 # 所以在这里需要导入这两个模块，以str表示模块的位置，模块组成tuple后赋值给CELERY_IMPORTS
 # 这样Celery在启动时，会自动找到这些模块，并导入模块内的task
-CELERY_IMPORTS = ('app.command.tasks')
+CELERY_IMPORTS = ('celery_tasks.tasks')
 
 # 为Celery设定多个队列，CELERY_QUEUES是个tuple，每个tuple的元素都是由一个Queue的实例组成
 # 创建Queue的实例时，传入name和routing_key，name即队列名称
@@ -56,7 +56,7 @@ CELERYBEAT_SCHEDULE = {
     # 给计划任务取一个独一无二的名字吧
     'every-30-seconds': {
         # task就是需要执行计划任务的函数
-         'task': 'app.command.tasks.add',
+         'task': 'celery_tasks.tasks.add',
          # 配置计划任务的执行时间，这里是每300秒执行一次
          'schedule': timedelta(seconds=300),
          # 传入给计划任务函数的参数
@@ -66,5 +66,5 @@ CELERYBEAT_SCHEDULE = {
 
 # 限制此类型的任务， 每分钟只处理10个
 CELERY_ANNOTATIONS = {
-    'app.command.tasks.add': {'rate_limit': '10/m'}
+    'celery_tasks.tasks.add': {'rate_limit': '10/m'}
 }
