@@ -32,8 +32,11 @@ def parse_inner(url: str, payload: dict):
     items = payload['items']
     if 'zhihu' in url or 'oschina' in url:
         for item in items:
-            query = """
-            INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
-            VALUES('{0}', '{1}', '{2}', '{3}', {4});
-            """.format(url, item['link'], item['title'], pymysql.escape_string(item['summary']), get_unix_time_tuple())
-            db.query(query)
+            try:
+                query = """
+                INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
+                VALUES('{0}', '{1}', '{2}', '{3}', {4});
+                """.format(url, item['link'], item['title'], pymysql.escape_string(item['summary']), get_unix_time_tuple())
+                db.query(query)
+            except Exception as e:
+                continue

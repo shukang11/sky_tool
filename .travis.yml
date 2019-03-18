@@ -13,8 +13,7 @@ install:
 script: pytest tests/
 
 env:
- - PIPENV_VENV_IN_PROJECT=1
- - FLASK_ENV=development
+ - PIPENV_VENV_IN_PROJECT=1 FLASK_ENV=development
 
 branches:
   only:
