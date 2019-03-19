@@ -76,8 +76,11 @@ def query_task():
     if not key:
         return CommonError.get_error(40000)
     result = redisClient.get('celery-task-meta-'+str(key))
-    reuslt = str(result, encoding='utf-8')
-    result = json.loads(result)
+    if isinstance(result, bytes):
+        reuslt = str(result, encoding='utf-8')
+        result = json.loads(result)
+    else:
+        return CommonError.error_toast('no task')
     return response_succ(body=result)
 
 # debug route
