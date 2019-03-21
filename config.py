@@ -60,10 +60,22 @@ class Config:
     # 每个task的value值也是为dict，设定需要指派的队列name，及对应的routing_key
     # 这里的name和routing_key需要和CELERY_QUEUES设定的完全一致
     CELERY_ROUTES = {
-        'app.command.tasks.add': {'queue': 'web_task', 'routing_key': 'web.add'},
-        'app.command.tasks.mul': {'queue': 'web_task', 'routing_key': 'web.mul'},
-        'app.command.tasks.async_email_to': {'queue': 'web_task', 'routing_key': 'task.email'},
-        'app.command.tasks.async_parser_feed': {'queue': 'debet_task', 'routing_key': 'task.parser'},
+        'celery_tasks.tasks.add': {
+            'queue': 'web_task', 
+            'routing_key': 'web.add'
+            },
+        'celery_tasks.tasks.mul': {
+            'queue': 'web_task', 
+            'routing_key': 'web.mul'
+            },
+        'celery_tasks.tasks.async_email_to': {
+            'queue': 'web_task', 
+            'routing_key': 'task.email'
+            },
+        'celery_tasks.tasks.async_parser_feed': {
+            'queue': 'debet_task', 
+            'routing_key': 'task.parser'
+            },
     }
 
     CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -83,13 +95,13 @@ class Config:
     # 定义定时任务
     CELERYBEAT_SCHEDULE = {
         # 给计划任务取一个独一无二的名字吧
-        'every-30-seconds': {
+        'every-3-seconds': {
             # task就是需要执行计划任务的函数
             'task': 'celery_tasks.tasks.add',
             # 配置计划任务的执行时间，这里是每300秒执行一次
-            'schedule': timedelta(seconds=300),
+            'schedule': timedelta(seconds=3),
             # 传入给计划任务函数的参数
-            'args': {'x': 1, 'y': 3}
+            'args': (1, 6)
         }
     }
 
