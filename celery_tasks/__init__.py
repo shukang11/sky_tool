@@ -3,7 +3,7 @@ from celery import Celery
 import records
 from config import config
 
-env = os.environ.get('FLASK_ENV')
+env = os.environ.get('FLASK_ENV') or 'default'
 
 config_obj = config[env]
 
