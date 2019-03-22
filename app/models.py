@@ -109,7 +109,7 @@ class RssModel(db.Model, BaseModel):
 
     rss_id = Column(INTEGER, Sequence(start=1, increment=1,
                                        name="rss_id_sep"), primary_key=True, autoincrement=True)
-    rss_link = Column(String(255), nullable=True)
+    rss_link = Column(String(255), nullable=True, unique=True)
     rss_subtitle = Column(String(255), nullable=True)
     add_time = Column(String(20), nullable=True)
     rss_version = Column(String(10), nullable=True)
