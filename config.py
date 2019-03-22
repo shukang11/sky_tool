@@ -145,7 +145,9 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:111111@localhost/sky_tool'
+    DEBUG = False
+
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/sky_tool'
 
 
 config = {

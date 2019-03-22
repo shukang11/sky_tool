@@ -24,6 +24,8 @@ class CommonError(ApiError):
             9999: response_error(error_code=9999, msg="unknown_error", http_code=400),
             # 参数不全或错误
             40000: response_error(error_code=40000, msg="args_missing_or_wrong", http_code=400),
+            # token 过期
+            40204: response_error(error_code=40204, msg="token expired", http_code=400),
             # 需要权限
             43000: response_error(error_code=43000, msg="need_permission", http_code=401),
             # 资源不存在
@@ -47,7 +49,6 @@ class UserError(CommonError):
             40200: response_error(error_code=40200, msg="account_exsist", http_code=400),
             # 无此账号，无法找出用户
             40203: response_error(error_code=40203, msg="no_account", http_code=400),
-            # token 过期
-            40204: response_error(error_code=40204, msg="token expired", http_code=400),
+            
         }
         return switcher.get(error_code) or super(UserError, cls).get_error(error_code)

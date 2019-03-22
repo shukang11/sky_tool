@@ -21,7 +21,9 @@ def register():
     user.token = token
     db.session.add(user)
     db.session.commit()
-    return response_succ(body={"user_id": user.id})
+    payload = {}
+    payload['user_id'] = user.id
+    return response_succ(body=payload)
 
 
 @api.route("/user/login", methods=["POST"])
@@ -42,7 +44,6 @@ def login():
         record.login_time = get_unix_time_tuple()
         record.log_ip = request.args.get("user_ip") or request.remote_addr
         db.session.add(record)
-
         db.session.commit()
         return response_succ(body={'token': token})
     else:
