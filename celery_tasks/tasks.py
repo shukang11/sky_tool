@@ -3,6 +3,7 @@ import requests
 from celery_tasks import celery
 from celery import Task
 from celery_tasks.email import Mail, Message
+from celery_tasks.monitor import exec_cmd
 from celery_tasks.rss import parser_feed, parse_inner
 from app.utils import get_unix_time_tuple
 class CallBackTask(Task):
@@ -61,8 +62,8 @@ def async_parser_feed(url: str):
 
 @celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def report_local_ip():
-    import subprocess, time
+    import time
     today = str(time.localtime(time.time()))
-    child: bytes = subprocess.check_output(['ifconfig -a'], shell=True)
-    ifconfig_result = str(child.decode("utf-8"))
+    ifconfig_result = str(exec_cmd("ifconfig -a"))
     async_email_to(today, ifconfig_result, ['804506054@qq.com'])
+    

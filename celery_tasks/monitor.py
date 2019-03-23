@@ -24,6 +24,5 @@ def disk_state():
     for disk in disk_lists[1:]:
         print("\t文件系统：{name} \t容量：{size} \t已用：{used} \t可用：{unused} \t已用%挂载点：{c}".format(name=disk[0], size=disk[1], used=disk[2], unused=disk[3], c=disk[4]))
 
-
 if __name__ == "__main__":
     disk_state()

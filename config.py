@@ -45,7 +45,7 @@ class Config:
     CELERY_QUEUES = {
         Queue('default', routing_key='task.#'),
         Queue('web_task', routing_key='web.#'),
-        Queue('debet_task', routing_key='debet.#'),
+        Queue('debet_task', routing_key='debet.#', delivery_mode=1), # 设置了阅后即焚模式
         }
     # 默认的交换机名称
     CELERY_DEFAULT_EXCHANGE = 'tasks'
