@@ -71,7 +71,11 @@ class Config:
         'celery_tasks.tasks.report_local_ip': {
             'queue': 'debet_task', 
             'routing_key': 'task.report.ip'
-        }
+        },
+        'celery_tasks.tasks.parse_rsses': {
+            'queue': 'debet_task', 
+            'routing_key': 'task.parse.rss'
+        },
     }
 
     CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -91,9 +95,17 @@ class Config:
     # 定义定时任务
     CELERYBEAT_SCHEDULE = {
         # 给计划任务取一个独一无二的名字吧
-        'every-2-days': {
+        'celery_tasks.tasks.report_local_ip': {
             # task就是需要执行计划任务的函数
             'task': 'celery_tasks.tasks.report_local_ip',
+            # 配置计划任务的执行时间，这里是每300秒执行一次
+            'schedule': timedelta(seconds=60*24*2),
+            # 传入给计划任务函数的参数
+            'args': ()
+        },
+        'celery_tasks.tasks.parse_rsses': {
+            # task就是需要执行计划任务的函数
+            'task': 'celery_tasks.tasks.parse_rsses',
             # 配置计划任务的执行时间，这里是每300秒执行一次
             'schedule': timedelta(seconds=60*24*2),
             # 传入给计划任务函数的参数
@@ -103,7 +115,8 @@ class Config:
 
     # 限制此类型的任务， 每分钟只处理10个
     CELERY_ANNOTATIONS = {
-        'celery_tasks.tasks.report_local_ip': {'rate_limit': '1/m'}
+        'celery_tasks.tasks.report_local_ip': {'rate_limit': '1/m'},
+        'celery_tasks.tasks.parse_rsses': { 'rate_limit': '1/m' },
     }
 
     @classmethod

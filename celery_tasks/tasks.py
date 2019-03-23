@@ -1,11 +1,12 @@
 import time
 import requests
-from celery_tasks import celery
+from celery_tasks import celery, db
 from celery import Task
 from celery_tasks.email import Mail, Message
 from celery_tasks.monitor import exec_cmd
 from celery_tasks.rss import parser_feed, parse_inner
 from app.utils import get_unix_time_tuple
+
 class CallBackTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
         print(str(args))
@@ -60,10 +61,21 @@ def async_parser_feed(url: str):
     parse_inner(url, result)
     return result
 
+# deat mession
+
 @celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def report_local_ip():
     import time
     today = str(time.localtime(time.time()))
     ifconfig_result = str(exec_cmd("ifconfig -a"))
     async_email_to(today, ifconfig_result, ['804506054@qq.com'])
+
+@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+def parse_rsses():
+    sql = """
+    SELECT bao_rss.rss_link FROM bao_rss;
+    """
+    links = db.query(sql)
+    for link in links:
+        async_parser_feed(link['rss_link'])
     
