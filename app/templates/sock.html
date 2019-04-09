@@ -21,6 +21,10 @@
             console.log('rec' + msg.data);
             $('#log').append('Rec: ' + msg.data + '<br>')
         })
+
+        $('#background').click(function() {
+            socket.emit('rec_client', {'data': 'hid'});
+        });
     });
     </script>
 </body>

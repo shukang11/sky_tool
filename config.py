@@ -104,11 +104,8 @@ class Config:
             'args': ()
         },
         'celery_tasks.tasks.parse_rsses': {
-            # task就是需要执行计划任务的函数
             'task': 'celery_tasks.tasks.parse_rsses',
-            # 配置计划任务的执行时间，这里是每300秒执行一次
             'schedule': timedelta(seconds=60*24*2),
-            # 传入给计划任务函数的参数
             'args': ()
         }
     }
