@@ -32,14 +32,14 @@ def parser_feed(feed_url: str):
     return payload
 
 def parse_inner(url: str, payload: dict):
-    version = payload['version']
+    version = payload['version'] if hasattr(payload, 'version') else ''
     title = payload['title']
     link = payload['link']
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
         query = """
-        INSERT IGNORE INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
+        INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
         VALUES('{0}', '{1}', '{2}', '{3}', {4}) on duplicate key update add_time='{5}';
         """.format(url, item['link'], item['title'], pymysql.escape_string(item['summary']), get_unix_time_tuple(), get_unix_time_tuple())
         db.query(query)

@@ -63,7 +63,8 @@ def user_info():
     info = {
         "nickname": user.nickname or "",
         "email": user.email,
-        "token": user.token
+        "token": user.token,
+        "background_image": "http://pic1.nipic.com/2008-08-14/2008814183939909_2.jpg",
     }
     return response_succ(body=info)
 
