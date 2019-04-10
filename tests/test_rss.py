@@ -20,3 +20,11 @@ class TestRss(TestBase):
         }
         rv = self._client.post("/api/rss/limit", json=params)
         assert rv.status_code == 200
+
+    def test_list_rss_content(self):
+        token = self.login()
+        params = {
+            "token": token
+        }
+        rv = self._client.post("/api/rss/content/list", json=params)
+        assert rv.status_code == 200

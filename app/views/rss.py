@@ -70,6 +70,7 @@ def parser_rss():
     result['task_id'] = task.id
     return response_succ(body=result)
 
+
 @api.route('/rss/parser_backend', methods=['GET', 'POST'])
 def task_parser_backend():
     params = request.values or request.get_json() or {}
@@ -81,4 +82,31 @@ def task_parser_backend():
     payload['result'] = result
     payload['task_id'] = task_id
     payload['trackback'] = trackback
+    return response_succ(body=payload)
+
+
+@api.route('/rss/content/list', methods=['POST'])
+@login_require
+def rss_content_list():
+    params = request.values or request.get_json() or {}
+    pages = params.get('pages') or 0
+    limit = params.get('limit') or 10
+    time_desc = params.get('time_is_desc') or 0 # 0 升序 1 降序
+    sql = """
+    SELECT * FROM bao_rss_content order by add_time {} limit {} offset {} ;
+    """.format('desc' if time_desc else 'asc', limit, pages*limit)
+    # sqlalchemy执行sql
+    data_query = db.session.execute(sql)
+    total = data_query.rowcount
+    payload = {}
+    payload['total'] = total
+    payload['pages'] = pages
+    payload['limit'] = limit
+    payload['list'] = [{
+        'link': item['content_link'],
+        'base': item['content_base'],
+        'add_time': item['add_time'],
+        'title': item['content_title'],
+        'id': item['content_id'],
+    } for item in data_query.fetchall()]
     return response_succ(body=payload)
