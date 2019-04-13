@@ -99,13 +99,13 @@ class Config:
             # task就是需要执行计划任务的函数
             'task': 'celery_tasks.tasks.report_local_ip',
             # 配置计划任务的执行时间，这里是每300秒执行一次
-            'schedule': timedelta(seconds=60*24*2),
+            'schedule': timedelta(seconds=60*60*24*2),
             # 传入给计划任务函数的参数
             'args': ()
         },
         'celery_tasks.tasks.parse_rsses': {
             'task': 'celery_tasks.tasks.parse_rsses',
-            'schedule': timedelta(seconds=60*24*2),
+            'schedule': timedelta(seconds=60*60*24*2),
             'args': ()
         }
     }
