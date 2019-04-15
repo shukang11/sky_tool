@@ -3,8 +3,9 @@ from sqlalchemy.dialects.mssql import FLOAT, TEXT, INTEGER, DECIMAL, SMALLINT
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, \
     UnmappedColumnError
 from sqlalchemy import Sequence
-import flask
 from flask_sqlalchemy import SQLAlchemy
+
+import flask
 from flask import Flask, request, jsonify, g, render_template, current_app
 from flask_uploads import UploadSet, DEFAULTS
 from flask_socketio import SocketIO

@@ -23,7 +23,10 @@ def add_rss_source():
     bind_user_id = g.current_user.id
     
     try:
-        exists = db.session.query(RssModel).filter(RssModel.rss_link == source).first()
+        query = """
+        SELECT * FROM bao_rss WHERE rss_link = '{}';
+        """.format(source)
+        exists = db.session.execute(query).fetchone()
         rss_id = None
         if exists:
             rss_id = exists.rss_id
@@ -34,9 +37,9 @@ def add_rss_source():
             rss_id = rss.rss_id
         
         query = """
-         * FROM bao_rss_user WHERE user_id = {} and rss_id = {};
+        SELECT * FROM bao_rss_user WHERE user_id = {} and rss_id = {};
         """.format(bind_user_id, rss_id)
-        relation_id = db.session.query(query)
+        relation_id = db.session.execute(query).fetchone()
         result = {}
         if relation_id:
             result["rss_id"] = rss_id
