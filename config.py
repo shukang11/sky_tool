@@ -45,7 +45,7 @@ class Config:
     CELERY_QUEUES = {
         Queue('default', routing_key='task.#'),
         Queue('web_task', routing_key='web.#'),
-        Queue('debet_task', routing_key='debet.#'),
+        Queue('debet_task', routing_key='debet.#', delivery_mode=1), # 设置了阅后即焚模式
         }
     # 默认的交换机名称
     CELERY_DEFAULT_EXCHANGE = 'tasks'
@@ -60,22 +60,22 @@ class Config:
     # 每个task的value值也是为dict，设定需要指派的队列name，及对应的routing_key
     # 这里的name和routing_key需要和CELERY_QUEUES设定的完全一致
     CELERY_ROUTES = {
-        'celery_tasks.tasks.add': {
-            'queue': 'web_task', 
-            'routing_key': 'web.add'
-            },
-        'celery_tasks.tasks.mul': {
-            'queue': 'web_task', 
-            'routing_key': 'web.mul'
-            },
         'celery_tasks.tasks.async_email_to': {
             'queue': 'web_task', 
             'routing_key': 'task.email'
-            },
+        },
         'celery_tasks.tasks.async_parser_feed': {
             'queue': 'debet_task', 
             'routing_key': 'task.parser'
-            },
+        },
+        'celery_tasks.tasks.report_local_ip': {
+            'queue': 'debet_task', 
+            'routing_key': 'task.report.ip'
+        },
+        'celery_tasks.tasks.parse_rsses': {
+            'queue': 'debet_task', 
+            'routing_key': 'task.parse.rss'
+        },
     }
 
     CELERY_RESULT_BACKEND = 'redis://localhost:6379'
@@ -95,19 +95,25 @@ class Config:
     # 定义定时任务
     CELERYBEAT_SCHEDULE = {
         # 给计划任务取一个独一无二的名字吧
-        'every-3-seconds': {
+        'celery_tasks.tasks.report_local_ip': {
             # task就是需要执行计划任务的函数
-            'task': 'celery_tasks.tasks.add',
+            'task': 'celery_tasks.tasks.report_local_ip',
             # 配置计划任务的执行时间，这里是每300秒执行一次
-            'schedule': timedelta(seconds=3),
+            'schedule': timedelta(seconds=60*60*24*2),
             # 传入给计划任务函数的参数
-            'args': (1, 6)
+            'args': ()
+        },
+        'celery_tasks.tasks.parse_rsses': {
+            'task': 'celery_tasks.tasks.parse_rsses',
+            'schedule': timedelta(seconds=60*60*24*2),
+            'args': ()
         }
     }
 
     # 限制此类型的任务， 每分钟只处理10个
     CELERY_ANNOTATIONS = {
-        'celery_tasks.tasks.add': {'rate_limit': '10/m'}
+        'celery_tasks.tasks.report_local_ip': {'rate_limit': '1/m'},
+        'celery_tasks.tasks.parse_rsses': { 'rate_limit': '1/m' },
     }
 
     @classmethod

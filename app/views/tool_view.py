@@ -65,7 +65,7 @@ def email_to():
 
     result = {}
     result['recipients'] = receivers
-    task = async_email_to.delay(subject=subject,body=body, recipients=receivers)
+    task = async_email_to.delay(subject=subject, body=body, recipients=receivers)
     result['task_id'] = task.id
     return response_succ(body=result)
 
@@ -87,9 +87,6 @@ def query_task():
 # debug route
 @api.route('/tool/test_add', methods=['GET', 'POST'])
 def test_add():
-    from celery_tasks.tasks import mul
-    backend = str(request.scheme) + '://' + str(request.host) + '/' + url_for('api.task_parser_backend')
-    task = mul.delay(x=1, y=5, callback=backend)
     payload = {}
-    payload['id'] = task.id
+    payload['id'] = 'task.id'
     return response_succ(body=payload)

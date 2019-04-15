@@ -1,3 +1,4 @@
+import requests as req
 from flask import request
 from celery import Task
 from ..views import api
@@ -15,9 +16,17 @@ def add_rss_source():
     source = params.get("source")
     if not source:
         return CommonError.get_error(40000)
+    # 查看是否可用
+    resp = req.post(source)
+    if resp.status_code == 404 or resp.status_code >= 500:
+        return CommonError.error_toast("wrong link")
     bind_user_id = g.current_user.id
+    
     try:
-        exists = db.session.query(RssModel).filter(RssModel.rss_link == source).first()
+        query = """
+        SELECT * FROM bao_rss WHERE rss_link = '{}';
+        """.format(source)
+        exists = db.session.execute(query).fetchone()
         rss_id = None
         if exists:
             rss_id = exists.rss_id
@@ -27,9 +36,12 @@ def add_rss_source():
             db.session.flush() # flush预提交，等于提交到数据库内存
             rss_id = rss.rss_id
         
-        exists_relation_ship = db.session.query(RssUserModel).filter(RssUserModel.rss_user_id == bind_user_id, RssUserModel.rss_id == rss_id).first()
+        query = """
+        SELECT * FROM bao_rss_user WHERE user_id = {} and rss_id = {};
+        """.format(bind_user_id, rss_id)
+        relation_id = db.session.execute(query).fetchone()
         result = {}
-        if exists_relation_ship:
+        if relation_id:
             result["rss_id"] = rss_id
         else:
             rss_user_relationship = RssUserModel(bind_user_id, rss_id)
@@ -70,6 +82,7 @@ def parser_rss():
     result['task_id'] = task.id
     return response_succ(body=result)
 
+
 @api.route('/rss/parser_backend', methods=['GET', 'POST'])
 def task_parser_backend():
     params = request.values or request.get_json() or {}
@@ -81,4 +94,31 @@ def task_parser_backend():
     payload['result'] = result
     payload['task_id'] = task_id
     payload['trackback'] = trackback
+    return response_succ(body=payload)
+
+
+@api.route('/rss/content/list', methods=['POST'])
+@login_require
+def rss_content_list():
+    params = request.values or request.get_json() or {}
+    pages = params.get('pages') or 0
+    limit = params.get('limit') or 10
+    time_desc = params.get('time_is_desc') or 0 # 0 升序 1 降序
+    sql = """
+    SELECT * FROM bao_rss_content order by add_time {} limit {} offset {} ;
+    """.format('desc' if time_desc else 'asc', limit, pages*limit)
+    # sqlalchemy执行sql
+    data_query = db.session.execute(sql)
+    total = data_query.rowcount
+    payload = {}
+    payload['total'] = total
+    payload['pages'] = pages
+    payload['limit'] = limit
+    payload['list'] = [{
+        'link': item['content_link'],
+        'base': item['content_base'],
+        'add_time': item['add_time'],
+        'title': item['content_title'],
+        'id': item['content_id'],
+    } for item in data_query.fetchall()]
     return response_succ(body=payload)

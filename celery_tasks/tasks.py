@@ -1,10 +1,12 @@
 import time
 import requests
-from celery_tasks import celery
+from celery_tasks import celery, db
 from celery import Task
 from celery_tasks.email import Mail, Message
+from celery_tasks.monitor import exec_cmd
 from celery_tasks.rss import parser_feed, parse_inner
 from app.utils import get_unix_time_tuple
+
 class CallBackTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
         print(str(args))
@@ -22,24 +24,13 @@ class CallBackTask(Task):
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         return super(CallBackTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
-
 @celery.task(base=CallBackTask)  # 指定回调
 def add(x: int, y: int, *args, **kwargs):
     time.sleep(5)
     result = x + y
     return result
 
-
-@celery.task(bind=True)  # 将上下文环境绑定到当前
-def mul(self, x: int, y: int, *args, **kwargs):
-    print('Executing task id {0.id}, args: {0.args!r} kwargs: {0.kwargs!r} callbacks: {0.callbacks!r}'.format(
-        self.request))
-    time.sleep(5)
-    result = x + y
-    return result
-
-
-@celery.task(bind=True, ignore_result=True, default_retry_delay=300, max_retries=3)
+@celery.task(ignore_result=True, default_retry_delay=300, max_retries=3)
 def async_email_to(subject: str, body: str, recipients: list):
     """
     send email
@@ -69,3 +60,22 @@ def async_parser_feed(url: str):
     result = parser_feed(url)
     parse_inner(url, result)
     return result
+
+# deat mession
+
+@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+def report_local_ip():
+    import time
+    today = str(time.localtime(time.time()))
+    ifconfig_result = str(exec_cmd("ifconfig -a"))
+    async_email_to(today, ifconfig_result, ['804506054@qq.com'])
+
+@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+def parse_rsses():
+    sql = """
+    SELECT bao_rss.rss_link FROM bao_rss;
+    """
+    links = db.query(sql)
+    for link in links:
+        async_parser_feed(link['rss_link'])
+    
