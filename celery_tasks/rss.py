@@ -38,8 +38,12 @@ def parse_inner(url: str, payload: dict):
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
+        descript = item['summary']
+        html_rex = r'<.*>(.*?)</.*>'
+        if re.findall(html_rex, descript):
+            descript = ""
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
-        VALUES('{0}', '{1}', '{2}', '{3}', {4}) on duplicate key update add_time='{5}';
+        VALUES("{0}", "{1}", "{2}", "{3}", {4}) on duplicate key update add_time="{5}";
         """.format(url, item['link'], item['title'], pymysql.escape_string(item['summary']), get_unix_time_tuple(), get_unix_time_tuple())
         db.query(query)
