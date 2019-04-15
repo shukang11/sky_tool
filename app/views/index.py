@@ -1,3 +1,5 @@
+import requests
+
 from ..views import api
 from app.utils import response_succ
 from app.utils import login_require

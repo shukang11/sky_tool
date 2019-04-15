@@ -1,3 +1,4 @@
+import requests as req
 from flask import request
 from celery import Task
 from ..views import api
@@ -15,7 +16,12 @@ def add_rss_source():
     source = params.get("source")
     if not source:
         return CommonError.get_error(40000)
+    # 查看是否可用
+    resp = req.post(source)
+    if resp.status_code == 404 or resp.status_code >= 500:
+        return CommonError.error_toast("wrong link")
     bind_user_id = g.current_user.id
+    
     try:
         exists = db.session.query(RssModel).filter(RssModel.rss_link == source).first()
         rss_id = None
@@ -27,9 +33,12 @@ def add_rss_source():
             db.session.flush() # flush预提交，等于提交到数据库内存
             rss_id = rss.rss_id
         
-        exists_relation_ship = db.session.query(RssUserModel).filter(RssUserModel.rss_user_id == bind_user_id, RssUserModel.rss_id == rss_id).first()
+        query = """
+         * FROM bao_rss_user WHERE user_id = {} and rss_id = {};
+        """.format(bind_user_id, rss_id)
+        relation_id = db.session.query(query)
         result = {}
-        if exists_relation_ship:
+        if relation_id:
             result["rss_id"] = rss_id
         else:
             rss_user_relationship = RssUserModel(bind_user_id, rss_id)
