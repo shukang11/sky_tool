@@ -7,7 +7,8 @@ from app.utils import get_unix_time_tuple
 def parser_feed(feed_url: str):
     feeds = feedparser.parse(feed_url)
     payload = {}
-
+    if not hasattr(feeds, 'version'):
+        return payload
     version = feeds.version
     title = feeds.feed.title # rss的标题
     link = feeds.feed.link # 链接
@@ -32,6 +33,7 @@ def parser_feed(feed_url: str):
     return payload
 
 def parse_inner(url: str, payload: dict):
+    if len(payload) == 0: return
     version = payload['version'] if hasattr(payload, 'version') else ''
     title = payload['title']
     link = payload['link']
