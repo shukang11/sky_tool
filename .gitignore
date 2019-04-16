@@ -127,6 +127,7 @@ data-dev.sqlite
 # data-test.sqlite
 dump.rdb
 logs/
+celerybeat.pid
 
 # settings
 .vscode/
