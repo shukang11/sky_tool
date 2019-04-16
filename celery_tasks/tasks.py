@@ -1,6 +1,6 @@
 import time
 import requests
-from celery_tasks import celery, db
+from celery_tasks import celery_app, db
 from celery import Task
 from celery_tasks.email import Mail, Message
 from celery_tasks.monitor import exec_cmd
@@ -24,13 +24,13 @@ class CallBackTask(Task):
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         return super(CallBackTask, self).on_failure(exc, task_id, args, kwargs, einfo)
 
-@celery.task(base=CallBackTask)  # 指定回调
+@celery_app.task(base=CallBackTask)  # 指定回调
 def add(x: int, y: int, *args, **kwargs):
     time.sleep(5)
     result = x + y
     return result
 
-@celery.task(ignore_result=True, default_retry_delay=300, max_retries=3)
+@celery_app.task(ignore_result=True, default_retry_delay=300, max_retries=3)
 def async_email_to(subject: str, body: str, recipients: list):
     """
     send email
@@ -49,7 +49,7 @@ def async_email_to(subject: str, body: str, recipients: list):
                         recipients=receivers, body=body or "", sender=sender)
     mail.send(message)
 
-@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def async_parser_feed(url: str):
     """
     开始解析rss任务
@@ -63,14 +63,14 @@ def async_parser_feed(url: str):
 
 # deat mession
 
-@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def report_local_ip():
     import time
     today = str(time.localtime(time.time()))
     ifconfig_result = str(exec_cmd("ifconfig -a"))
     async_email_to(today, ifconfig_result, ['804506054@qq.com'])
 
-@celery.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def parse_rsses():
     sql = """
     SELECT bao_rss.rss_link FROM bao_rss;
