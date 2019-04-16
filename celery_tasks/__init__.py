@@ -8,8 +8,8 @@ env = os.environ.get('FLASK_ENV') or 'default'
 
 config_obj = config[env]
 
-celery = Celery('tasks')
-celery.config_from_object(config_obj)
+celery_app = Celery('tasks')
+celery_app.config_from_object(config_obj)
 url = getattr(config_obj, 'SQLALCHEMY_DATABASE_URI')
 db = records.Database(url)
 

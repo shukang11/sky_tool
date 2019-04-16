@@ -1,6 +1,6 @@
 import time
 import requests
-from celery_tasks import celery, db
+from celery_tasks import celery_app, db
 from celery import Task
 from celery_tasks.email import Mail, Message
 from celery_tasks.monitor import exec_cmd
