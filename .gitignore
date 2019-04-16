@@ -128,6 +128,9 @@ data-dev.sqlite
 dump.rdb
 logs/
 celerybeat.pid
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
 
 # settings
 .vscode/
