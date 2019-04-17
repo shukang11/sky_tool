@@ -42,7 +42,8 @@ def parse_inner(url: str, payload: dict):
     for item in items:
         descript = item['summary']
         html_rex = r'<.*>(.*?)</.*>'
-        if re.findall(html_rex, descript):
+        result = re.match(html_rex, descript)
+        if result:
             descript = ""
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)

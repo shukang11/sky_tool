@@ -28,3 +28,12 @@ class TestRss(TestBase):
         }
         rv = self._client.post("/api/rss/content/list", json=params)
         assert rv.status_code == 200
+
+    def test_re001(self):
+        import re
+        descript = """
+        <p>dfasdfs</p>
+        """
+        html_rex = r'<.*>(.*?)</.*>'
+        result = re.match(p7, c7)
+        assert result != None
