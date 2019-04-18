@@ -41,12 +41,12 @@ def parse_inner(url: str, payload: dict):
     items = payload['items']
     for item in items:
         descript = item['summary']
-        html_rex = r'<.*>(.*?)</.*>'
+        html_rex = r'<.*>.*?</.*>'
         result = re.match(html_rex, descript)
         if result:
             descript = ""
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
         VALUES("{0}", "{1}", "{2}", "{3}", {4}) on duplicate key update add_time="{5}";
-        """.format(url, item['link'], item['title'], pymysql.escape_string(item['summary']), get_unix_time_tuple(), get_unix_time_tuple())
+        """.format(url, item['link'], item['title'], pymysql.escape_string(descript), get_unix_time_tuple(), get_unix_time_tuple())
         db.query(query)

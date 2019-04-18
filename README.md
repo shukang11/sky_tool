@@ -23,3 +23,6 @@
 如果想使用 eventlet
 
 `gunicorn --worker-class eventlet -c gunicorn_config.py manager:application`
+
+
+# 碰到的问题
