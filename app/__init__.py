@@ -1,4 +1,5 @@
-from app.utils.ext import Flask, db, scheduler, current_app, socket_app, flask_app
+from app.utils.ext import Flask, db, scheduler, \
+    current_app, socket_app, flask_app, fileStorage, configure_uploads
 from config import config, Config, root_dir
 import os
 
@@ -42,6 +43,7 @@ def create_app(env: str) -> Flask:
     # 注册插件
     db.init_app(app)
     socket_app.init_app(app)
+    configure_uploads(app, fileStorage)
     config_obj.init_app(app)
     register_blueprint(app)
     create_table(env, app)

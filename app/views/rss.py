@@ -48,6 +48,8 @@ def add_rss_source():
             db.session.add(rss_user_relationship)
             db.session.commit()
             result["rss_id"] = rss_id
+        from celery_tasks.tasks import async_parser_feed
+        async_parser_feed.delay(source)
         return response_succ(body=result)
     except Exception as e:
         db.session.rollback()
