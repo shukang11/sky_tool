@@ -34,6 +34,6 @@ class TestRss(TestBase):
         descript = """
         <p>dfasdfs</p>
         """
-        html_rex = r'<.*>(.*?)</.*>'
-        result = re.match(p7, c7)
+        html_rex = r'<.*>.*?</.*>'
+        result = re.match(html_rex, descript)
         assert result != None
