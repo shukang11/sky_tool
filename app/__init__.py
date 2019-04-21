@@ -30,7 +30,6 @@ def register_blueprint(app):
 
 
 def create_table(config_name, app):
-    # if config_name is not 'production':
     from app.models import __all__
     with app.app_context():
         db.create_all()

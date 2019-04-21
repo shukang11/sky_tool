@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pipenv run %(ENV_HOME)/.venv/bin/gunicorn -c gunicorn_config.py main:application
+pipenv run %(ENV_HOME)/.venv/bin/gunicorn --worker-class eventlet -c gunicorn_config.py manager:application
 
 # 启动 celery 服务(消费者)
 pipenv run %(ENV_HOME)/.venv/bin/celery -A celery_tasks:celery_app worker -l info
