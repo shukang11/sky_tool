@@ -4,8 +4,7 @@ from werkzeug.serving import run_simple
 import eventlet
 from app import create_app as create_main_app
 
-if os.environ.get('FLASK_ENV') == "production":
-    eventlet.monkey_patch()
+eventlet.monkey_patch(socket=True, select=True)
 
 main_app = create_main_app(os.environ.get('FLASK_ENV') or 'default')
 application = DispatcherMiddleware(main_app, {})

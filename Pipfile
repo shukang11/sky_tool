@@ -1,18 +1,14 @@
 [[source]]
-
 url = "https://pypi.douban.com/simple/"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 requests = "*"
 sqlalchemy = "*"
 pymysql = "*"
 pymongo = "*"
 flask = "*"
-gunicorn = "*"
 flask-sqlalchemy = "*"
 redis = "*"
 records = "*"
@@ -22,17 +18,14 @@ flask-uploads = "*"
 feedparser = "*"
 flask-socketio = "*"
 eventlet = "*"
-
+gunicorn = "==18.0"
 
 [dev-packages]
-
 mypy = "*"
 "flake8" = "*"
 pytest = "*"
 nose = "*"
 "autopep8" = "*"
 
-
 [requires]
-
 python_version = "3.6"
