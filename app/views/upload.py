@@ -21,6 +21,7 @@ def upload():
         extension = file.filename.split('.')
         identifier = str(uuid.uuid4()).replace("-", "")+"."+extension[1]
         try:
+            print(identifier)
             rec = fileStorage.save(file, name=identifier)
             fileObj = FileModel(file_hash=identifier, file_name=file.filename, file_type=file.mimetype)
             fileObj.save(commit=True)
@@ -30,6 +31,7 @@ def upload():
             })
         except Exception as e:
             current_app.logger.error(e)
+            print(e)
             return CommonError.get_error(9999)
     return response_succ(body=resp)
 

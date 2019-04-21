@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 import flask
 from flask import Flask, request, jsonify, g, render_template, current_app
-from flask_uploads import UploadSet, DEFAULTS
+from flask_uploads import UploadSet, DEFAULTS, configure_uploads
 from flask_socketio import SocketIO
 import redis
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -59,5 +59,5 @@ __all__ = ["Column", "ForeignKey", "String", "FLOAT",
            "NoResultFound", "MultipleResultsFound",
            "UnmappedColumnError", "Sequence",
            "Flask", "request", "redisClient", "db",
-           "fileStorage", "jsonify", "g", "render_template",
+           "fileStorage", "configure_uploads", "jsonify", "g", "render_template",
            "scheduler", "current_app", "socket_app", "flask_app"]
