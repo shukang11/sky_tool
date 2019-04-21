@@ -16,10 +16,7 @@ def add_rss_source():
     source = params.get("source")
     if not source:
         return CommonError.get_error(40000)
-    # 查看是否可用
-    resp = req.post(source)
-    if resp.status_code == 404 or resp.status_code >= 500:
-        return CommonError.error_toast("wrong link")
+    
     bind_user_id = g.current_user.id
     
     try:
@@ -31,6 +28,10 @@ def add_rss_source():
         if exists:
             rss_id = exists.rss_id
         else:
+            # 查看是否可用
+            resp = req.post(source)
+            if resp.status_code == 404 or resp.status_code >= 500:
+                return CommonError.error_toast("wrong link")
             rss = RssModel(source)
             db.session.add(rss)
             db.session.flush() # flush预提交，等于提交到数据库内存
