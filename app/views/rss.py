@@ -126,7 +126,6 @@ def task_parser_backend():
     return response_succ(body=payload)
 
 
-# 获得 bao_rss_content 列表的接口(将废弃)
 @api.route('/rss/content/list', methods=['POST'])
 @login_require
 def rss_content_list():
@@ -161,37 +160,3 @@ def rss_content_list():
         'id': item['content_id'],
     } for item in data_query.fetchall()]
     return response_succ(body=payload)
-
-
-@api.route('/rss/content/filter', methods=['POST'])
-@login_require
-def rss_content_filter():
-    """ 
-    filter rss content
-    Args:
-    bases: list, rss_ids
-    pages: -
-    limit: -
-    tags: not yet
-    key_words: not yet
-    """
-    params = request.values or request.get_json() or {}
-    bind_user_id = g.current_user.id
-    # 添加根据 base 的 filter
-    base = params.get('bases') or []
-    # pages 
-    pages = params.get('pages') or 0
-    limit = params.get('limit') or 10
-
-    # tag 
-    tags = params.get('tags') or []
-
-    # key words
-    key_words = params.get('key_word') or ''
-
-    sql = ''
-    sql += 'SELECT * '
-    sql += 'FROM bao_rss_content, bao_rss, bao_rss_user '
-    sql += 'ORDER BY add_time {} LIMIT {} OFFSET {} ;'.format('desc' if time_desc else 'asc', limit, pages*limit)
-
-    pass
