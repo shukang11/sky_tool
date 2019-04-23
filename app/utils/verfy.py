@@ -23,3 +23,18 @@ def login_require(func):
         g.current_user = user
         return func(*args, **kwargs)
     return decorator_view
+
+
+def pages_info_require(func):
+    """ 处理请求前的页面信息 """
+    @wraps(func)
+    def decorator_view(*args, **kwargs):
+        params = request.values or request.get_json() or {}
+        pages = int(params.get('pages'))
+        limit = int(params.get('limit'))
+        info = {}
+        info['limit'] = max(limit, 1)
+        info['offset'] = max(pages, 0) * limit
+        g.pageinfo = info
+        return func(*args, **kwargs)
+    return decorator_view

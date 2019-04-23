@@ -8,7 +8,7 @@ from app.utils import login_require
 
 from app.utils.ext import request
 
-from flask import url_for
+from flask import url_for, g
 
 @api.route('/help', methods=['GET'])
 @login_require

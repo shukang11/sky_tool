@@ -2,7 +2,7 @@ import requests as req
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require
+from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
 
@@ -60,6 +60,7 @@ def add_rss_source():
 
 @api.route("/rss/limit", methods=["POST", "GET"])
 @login_require
+@pages_info_require
 def list_rss():
     # params = request.values or request.get_json() or {}
     # all_rss = db.session.query(RssModel).filter(RssModel.rss_id == RssUserModel.rss_id).filter(RssUserModel.user_id == g.current_user.id).all()
@@ -128,10 +129,14 @@ def task_parser_backend():
 
 @api.route('/rss/content/list', methods=['POST'])
 @login_require
+@pages_info_require
 def rss_content_list():
     params = request.values or request.get_json() or {}
-    pages = int(params.get('pages') or 0)
-    limit = int(params.get('limit') or 10)
+    limit = 10
+    pages = 0
+    if g.pageinfo:
+        limit = g.pageinfo['limit']
+        offset = g.pageinfo['offset']
     time_desc = bool(params.get('time_is_desc') or 0) # 0 升序 1 降序
     bind_user_id = g.current_user.id
     sql = """
@@ -144,7 +149,7 @@ def rss_content_list():
         )
     )
     ORDER BY add_time {order} limit {limit} offset {offset};
-    """.format(order='DESC' if time_desc else 'ASC', limit=limit, offset=pages*limit, user_id=bind_user_id)
+    """.format(order='DESC' if time_desc else 'ASC', limit=limit, offset=offset, user_id=bind_user_id)
     # sqlalchemy执行sql
     data_query = db.session.execute(sql)
     total = data_query.rowcount
