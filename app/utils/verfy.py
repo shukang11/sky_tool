@@ -35,6 +35,7 @@ def pages_info_require(func):
         info = {}
         info['limit'] = max(limit, 1)
         info['offset'] = max(pages, 0) * limit
+        info['pages'] = max(pages, 0)
         g.pageinfo = info
         return func(*args, **kwargs)
     return decorator_view

@@ -132,11 +132,13 @@ def task_parser_backend():
 @pages_info_require
 def rss_content_list():
     params = request.values or request.get_json() or {}
-    limit = 10
-    pages = 0
+    limit: int
+    pages: int
+    offset: int
     if g.pageinfo:
         limit = g.pageinfo['limit']
         offset = g.pageinfo['offset']
+        pages = g.pageinfo['pages']
     time_desc = bool(params.get('time_is_desc') or 0) # 0 升序 1 降序
     bind_user_id = g.current_user.id
     sql = """
