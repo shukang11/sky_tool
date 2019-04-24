@@ -30,8 +30,8 @@ def pages_info_require(func):
     @wraps(func)
     def decorator_view(*args, **kwargs):
         params = request.values or request.get_json() or {}
-        pages = int(params.get('pages'))
-        limit = int(params.get('limit'))
+        pages = int(params.get('pages') or 0)
+        limit = int(params.get('limit') or 0)
         info = {}
         info['limit'] = max(limit, 1)
         info['offset'] = max(pages, 0) * limit
