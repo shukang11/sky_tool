@@ -2,7 +2,7 @@ import requests as req
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require
+from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
 
@@ -29,7 +29,7 @@ def add_rss_source():
             rss_id = exists.rss_id
         else:
             # 查看是否可用
-            resp = req.post(source)
+            resp = req.get(source, headers=get_header(source))
             if resp.status_code == 404 or resp.status_code >= 500:
                 return CommonError.error_toast("wrong link")
             rss = RssModel(source)
