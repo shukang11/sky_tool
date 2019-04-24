@@ -24,5 +24,8 @@
 
 `gunicorn --worker-class eventlet -c gunicorn_config.py manager:application`
 
+# LOG
+## 2019.04.23
+> 完成rss订阅施工
 
 # 碰到的问题
