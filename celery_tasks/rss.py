@@ -35,12 +35,12 @@ def parser_feed(feed_url: str):
 def parse_inner(url: str, payload: dict):
     if len(payload) == 0: return
     version = payload['version'] if hasattr(payload, 'version') else ''
-    title = payload['title']
+    title = payload['title'] or '无标题'
     link = payload['link']
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
-        descript = item['summary']
+        descript = item['summary'] or ''
         html_rex = r'<.*>.*?</.*>'
         result = re.match(html_rex, descript)
         if result:
