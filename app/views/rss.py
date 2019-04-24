@@ -62,17 +62,6 @@ def add_rss_source():
 @login_require
 @pages_info_require
 def list_rss():
-    # params = request.values or request.get_json() or {}
-    # all_rss = db.session.query(RssModel).filter(RssModel.rss_id == RssUserModel.rss_id).filter(RssUserModel.user_id == g.current_user.id).all()
-    # result = []
-    # if not all_rss:
-    #     return CommonError.error_toast(msg="没有订阅")
-    # for rss in all_rss:
-    #     result.append({
-    #         "rss_id": rss.rss_id,
-    #         "rss_link": rss.rss_link,
-    #     })
-    """ rss_base list, query from bao_rss """
     params = request.values or request.get_json() or {}
     bind_user_id = g.current_user.id
     # pages 
@@ -140,18 +129,39 @@ def rss_content_list():
         offset = g.pageinfo['offset']
         pages = g.pageinfo['pages']
     time_desc = bool(params.get('time_is_desc') or 0) # 0 升序 1 降序
+    filter_rss_ids = str(params.get('filter_rss_ids'))
     bind_user_id = g.current_user.id
+
+    # query rss_ids
+    if filter_rss_ids:
+        sql = """
+        SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id} AND bao_rss_user.rss_id IN ( # 筛选选择的rss_id
+                {filter}
+            );
+        """.format(user_id=bind_user_id, filter=filter_rss_ids)
+    else: 
+        sql = """
+        SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id}
+        """.format(user_id=bind_user_id)
+    data_query = db.session.execute(sql)
+    all_rss_ids = [str(item['rss_id']) for item in data_query.fetchall()]
+    if len(all_rss_ids) == 0:
+        return CommonError.error_toast(msg='no content')
+    query_rss_ids = ', '.join(all_rss_ids)
+
+    # 查询 content
     sql = """
     SELECT * FROM bao_rss_content
-    WHERE bao_rss_content.content_base IN (
-        SELECT bao_rss.rss_link
-        FROM bao_rss
-        WHERE bao_rss.rss_id IN (
-            SELECT rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id}
+    WHERE bao_rss_content.content_base IN ( # rss网址
+        SELECT bao_rss.rss_link FROM bao_rss  WHERE bao_rss.rss_id IN ( # 筛选当前用户订阅的地址
+        {rss_ids}
         )
     )
     ORDER BY add_time {order} limit {limit} offset {offset};
-    """.format(order='DESC' if time_desc else 'ASC', limit=limit, offset=offset, user_id=bind_user_id)
+    """.format( rss_ids=query_rss_ids,
+                order='DESC' if time_desc else 'ASC', 
+                limit=limit, offset=offset, 
+                user_id=bind_user_id)
     # sqlalchemy执行sql
     data_query = db.session.execute(sql)
     total = data_query.rowcount
