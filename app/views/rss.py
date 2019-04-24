@@ -1,8 +1,8 @@
-import requests as req
+import re
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require
+from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
 
@@ -29,9 +29,10 @@ def add_rss_source():
             rss_id = exists.rss_id
         else:
             # 查看是否可用
-            resp = req.post(source)
-            if resp.status_code == 404 or resp.status_code >= 500:
-                return CommonError.error_toast("wrong link")
+            regex = r'(https?)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]'
+            result = re.match(regex, source)
+            if not result:
+                return  CommonError.error_toast("wrong link")
             rss = RssModel(source)
             db.session.add(rss)
             db.session.flush() # flush预提交，等于提交到数据库内存
@@ -129,11 +130,13 @@ def rss_content_list():
         offset = g.pageinfo['offset']
         pages = g.pageinfo['pages']
     time_desc = bool(params.get('time_is_desc') or 0) # 0 升序 1 降序
-    filter_rss_ids = str(params.get('filter_rss_ids'))
+    filter_rss_ids = params.get('filter_rss_ids')
     bind_user_id = g.current_user.id
 
     # query rss_ids
     if filter_rss_ids:
+        filter_rss_ids = str(filter_rss_ids).split(',').strip()
+        filter_rss_ids = ', '.join(filter_rss_ids)
         sql = """
         SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id} AND bao_rss_user.rss_id IN ( # 筛选选择的rss_id
                 {filter}
