@@ -9,7 +9,7 @@ from app.models import RssModel, RssUserModel
 @api.route("/rss/add", methods=["POST"])
 @login_require
 def add_rss_source():
-    """ add a rss
+    """ 添加一个订阅源
     try add a url to rss list
     """
     params = request.values or request.get_json() or {}
@@ -63,6 +63,7 @@ def add_rss_source():
 @login_require
 @pages_info_require
 def list_rss():
+    """ 查看订阅列表 """
     params = request.values or request.get_json() or {}
     bind_user_id = g.current_user.id
     # pages 
@@ -94,6 +95,7 @@ def list_rss():
 @api.route("/rss/parse", methods=["POST", "GET"])
 @login_require
 def parser_rss():
+    """ 开启解析任务 """
     params = request.values or request.get_json() or {}
     source = params.get("source")
     from celery_tasks.tasks import async_parser_feed
@@ -105,6 +107,7 @@ def parser_rss():
 
 @api.route('/rss/parser_backend', methods=['GET', 'POST'])
 def task_parser_backend():
+    """ 用于接受解析回调，暂时无用 """
     params = request.values or request.get_json() or {}
     status = params.get('status')
     result = params.get('result')
@@ -121,6 +124,7 @@ def task_parser_backend():
 @login_require
 @pages_info_require
 def rss_content_list():
+    """ 获取可读内容的列表 """
     params = request.values or request.get_json() or {}
     limit: int
     pages: int
@@ -180,3 +184,28 @@ def rss_content_list():
         'id': item['content_id'],
     } for item in data_query.fetchall()]
     return response_succ(body=payload)
+
+@api.route('/rss/record', methods=['GET', 'POST'])
+@login_require
+def rss_record():
+    params = request.values or request.get_json() or {}
+    url = str(params.get('url'))
+    if not url:
+        return CommonError.get_error(40000)
+    bind_user_id = g.current_user.id
+    sql = """
+    SELECT bao_rss_user.user_id, bao_rss.rss_id, bao_rss_content.content_id FROM bao_rss_content, bao_rss, bao_rss_user
+    WHERE bao_rss_content.content_link='{content_link}' 
+        AND bao_rss_content.content_base=bao_rss.rss_link 
+        AND bao_rss.rss_id=bao_rss_user.rss_id 
+        AND bao_rss_user.user_id={user_id};
+    """.format(content_link=url, user_id=bind_user_id)
+    data_query = db.session.execute(sql).fetchone()
+    if not data_query:
+        return CommonError.error_toast('no match data')
+    sql = """
+    INSERT INTO bao_rss_read_record(read_url_id, read_user_id, read_time) VALUES ({read_url_id}, {read_user_id}, '{read_time}');
+    """.format(read_url_id=data_query['content_id'], read_user_id=data_query['user_id'], read_time=get_unix_time_tuple())
+    data_query = db.session.execute(sql)
+    db.session.commit()
+    return response_succ(body={'state': 'success'})    
