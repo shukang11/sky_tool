@@ -157,3 +157,18 @@ class RssContentModel(db.Model, BaseModel):
         self.content_title = title
         self.content_description = description
         self.add_time = add_time or get_unix_time_tuple()
+
+
+class RssReadRecordModel(db.Model, BaseModel):
+    __tablename__ = 'bao_rss_read_record'
+
+    read_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="read_id_sep"), primary_key=True, autoincrement=True)
+    read_url_id = Column(INTEGER, nullable=False)
+    read_user_id = Column(INTEGER)
+    read_time = Column(String(20), nullable=True)
+
+    def __init__(self, url_id: int, user_id: int, read_at: str = None):
+        self.read_url_id = url_id
+        self.read_user_id = user_id
+        self.read_time = read_at or get_unix_time_tuple()
