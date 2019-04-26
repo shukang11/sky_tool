@@ -10,7 +10,7 @@ def parser_feed(feed_url: str):
     if not hasattr(feeds, 'version'):
         return payload
     version = feeds.version
-    title = feeds.feed.title # rss的标题
+    title = feeds.feed.title or '' # rss的标题
     link = feeds.feed.link # 链接
 
     payload['version'] = version
