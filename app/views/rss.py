@@ -98,8 +98,9 @@ def parser_rss():
     """ 开启解析任务 """
     params = request.values or request.get_json() or {}
     source = params.get("source")
+    bind_user_id = g.current_user.id
     from celery_tasks.tasks import async_parser_feed
-    task = async_parser_feed.delay(source)
+    task = async_parser_feed.delay(source, bind_user_id)
     result = {}
     result['task_id'] = task.id
     return response_succ(body=result)

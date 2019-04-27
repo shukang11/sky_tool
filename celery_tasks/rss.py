@@ -33,8 +33,8 @@ def parser_feed(feed_url: str):
     payload['items'] = result
     return payload
 
-def parse_inner(url: str, payload: dict):
-    if len(payload) == 0: return
+def parse_inner(url: str, payload: dict) -> bool:
+    if len(payload) == 0: return False
     version = payload['version'] if hasattr(payload, 'version') else ''
     title = payload['title'] or '无标题'
     link = payload['link']
@@ -51,3 +51,4 @@ def parse_inner(url: str, payload: dict):
         VALUES("{0}", "{1}", "{2}", "{3}", {4}) on duplicate key update add_time="{5}";
         """.format(url, item['link'], item['title'], pymysql.escape_string(descript), get_unix_time_tuple(), get_unix_time_tuple())
         db.query(query)
+    return True

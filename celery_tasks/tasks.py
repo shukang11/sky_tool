@@ -1,5 +1,6 @@
 import time
 import requests
+import pymysql
 from celery_tasks import celery_app, db
 from celery import Task
 from celery_tasks.email import Mail, Message
@@ -50,15 +51,23 @@ def async_email_to(subject: str, body: str, recipients: list):
     mail.send(message)
 
 @celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
-def async_parser_feed(url: str):
+def async_parser_feed(url: str, user_id: int):
     """
     开始解析rss任务
     Args:
     url: rss地址
     Return: 字典，包含了解析的结果
     """
+    sql = """
+    INSERT INTO bao_task_record(task_id, tast_name, user_id, argsrepr, kwargs, begin_at) VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}') ON DUPLICATE KEY UPDATE begin_at='{begin_at}';
+    """.format(task_id=async_parser_feed.request.id, tast_name=async_parser_feed.request.task, user_id=user_id or 0, argsrepr=pymysql.escape_string(str(async_parser_feed.request.args)), kwargs=pymysql.escape_string(str(async_parser_feed.request.kwargs)), begin_at=get_unix_time_tuple())
+    db.query(sql)
     result = parser_feed(url)
-    parse_inner(url, result)
+    isSuccess = parse_inner(url, result)
+    sql = """
+    UPDATE bao_task_record SET end_at='{end_at}', is_succ={is_succ} WHERE task_id='{task_id}'
+    """.format(task_id=async_parser_feed.request.id, is_succ=int(isSuccess), end_at=get_unix_time_tuple())
+    db.query(sql)
     return result
 
 # deat mession
