@@ -12,7 +12,8 @@ def parser_feed(feed_url: str):
     version = feeds.version
     title = feeds.feed.title or '' # rss的标题
     link = feeds.feed.link # 链接
-
+    if not link: return 
+    
     payload['version'] = version
     payload['title'] = title
     payload['link'] = link

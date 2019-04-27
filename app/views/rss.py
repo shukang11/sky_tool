@@ -133,7 +133,7 @@ def rss_content_list():
         limit = g.pageinfo['limit']
         offset = g.pageinfo['offset']
         pages = g.pageinfo['pages']
-    time_desc = bool(params.get('time_is_desc') or 0) # 0 升序 1 降序
+    time_desc = bool(params.get('time_desc') or 0) # 0 升序 1 降序
     filter_rss_ids = params.get('filter_rss_ids')
     bind_user_id = g.current_user.id
 
