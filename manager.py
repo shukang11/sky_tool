@@ -1,5 +1,5 @@
 import os
-from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.serving import run_simple
 import eventlet
 from app import create_app as create_main_app

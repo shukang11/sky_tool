@@ -172,3 +172,16 @@ class RssReadRecordModel(db.Model, BaseModel):
         self.read_url_id = url_id
         self.read_user_id = user_id
         self.read_time = read_at or get_unix_time_tuple()
+
+class TaskModel(db.Model, BaseModel):
+    """ 包含了任务发起者，开始时间, 结束时间 状态等 """
+    __tablename__ = 'bao_task_record'
+
+    task_id = Column(String(125), primary_key=True)
+    tast_name = Column(String(255))
+    argsrepr = Column(String(255))
+    kwargs = Column(String(255))
+    user_id = Column(INTEGER)
+    begin_at = Column(String(20))
+    end_at = Column(String(20))
+    is_succ = Column(SMALLINT)
