@@ -96,7 +96,7 @@ class Config:
     CELERYBEAT_SCHEDULE = {
         'celery_tasks.tasks.parse_rsses': {
             'task': 'celery_tasks.tasks.parse_rsses',
-            'schedule': timedelta(seconds=60*60*24),
+            'schedule': timedelta(seconds=60*60*4),
             'args': ()
         }
     }
