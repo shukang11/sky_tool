@@ -2,7 +2,7 @@ import re
 import feedparser
 from celery_tasks import db
 import pymysql
-from app.utils import get_unix_time_tuple
+from app.utils import get_unix_time_tuple, contain_emoji
 
 def parser_feed(feed_url: str):
     feeds = feedparser.parse(feed_url)
@@ -34,6 +34,7 @@ def parser_feed(feed_url: str):
     return payload
 
 def parse_inner(url: str, payload: dict) -> bool:
+    if not payload: return False
     if len(payload) == 0: return False
     version = payload['version'] if hasattr(payload, 'version') else ''
     title = payload['title'] or '无标题'
@@ -42,13 +43,16 @@ def parse_inner(url: str, payload: dict) -> bool:
     items = payload['items']
     for item in items:
         descript = item['summary'] or ''
+        title = item['title'] or ''
         html_rex = r'<.*>.*?</.*>'
         result = re.match(html_rex, descript)
-        if result:
+        if contain_emoji(title):
+            return False
+        if result or contain_emoji(descript):
             descript = ""
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
         VALUES("{0}", "{1}", "{2}", "{3}", {4}) on duplicate key update add_time="{5}";
-        """.format(url, item['link'], item['title'], pymysql.escape_string(descript), get_unix_time_tuple(), get_unix_time_tuple())
+        """.format(url, link, title, pymysql.escape_string(descript), get_unix_time_tuple(), get_unix_time_tuple())
         db.query(query)
     return True

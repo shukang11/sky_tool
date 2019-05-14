@@ -83,3 +83,35 @@ def get_random_num(digit=6):
         append = str(random.randint(1, 9))
         result = result + append
     return result
+
+def is_emoji(content: str):
+    """ judge str is emoji
+
+    Args: str type 
+
+    Return : Bool type , return True if is Emoji , else False
+    """
+    if not content:
+        return False
+    if u"\U0001F600" <= content and content <= u"\U0001F64F":
+        return True
+    elif u"\U0001F300" <= content and content <= u"\U0001F5FF":
+        return True
+    elif u"\U0001F680" <= content and content <= u"\U0001F6FF":
+        return True
+    elif u"\U0001F1E0" <= content and content <= u"\U0001F1FF":
+        return True
+    else:
+        return False
+
+def contain_emoji(content: str):
+    """ judge str contain emoji str
+
+    Args: str type
+
+    Return : Bool type, return True if contain Emoji, else False
+    """
+    for c in content:
+        if is_emoji(c):
+            return True
+    return False
