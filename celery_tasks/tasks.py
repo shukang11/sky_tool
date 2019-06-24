@@ -97,7 +97,7 @@ def report_local_ip():
     async_email_to(today, ifconfig_result, ['804506054@qq.com'])
 
 
-@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
+@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=False)
 def parse_rsses():
     r = parse_rsses.request
     if hasattr(r, 'task'):

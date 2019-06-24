@@ -42,8 +42,8 @@ def parse_inner(url: str, payload: dict) -> bool:
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
-        descript = item['summary'] or ''
-        title = item['title'] or ''
+        descript = item['summary'] if hasattr(item, "summary") else '' 
+        title = item['title'] if hasattr(item, "title") else '' 
         html_rex = r'<.*>.*?</.*>'
         result = re.match(html_rex, descript)
         if contain_emoji(title):
