@@ -140,7 +140,7 @@ def rss_content_list():
 
     # query rss_ids
     if filter_rss_ids:
-        filter_rss_ids = str(filter_rss_ids).split(',').strip()
+        filter_rss_ids = [ids.strip() for ids in str(filter_rss_ids).split(',')]
         filter_rss_ids = ', '.join(filter_rss_ids)
         sql = """
         SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id} AND bao_rss_user.rss_id IN ( # 筛选选择的rss_id
@@ -151,6 +151,7 @@ def rss_content_list():
         sql = """
         SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id}
         """.format(user_id=bind_user_id)
+    # 获得当前当前用户所有订阅的rss_id
     data_query = db.session.execute(sql)
     all_rss_ids = [str(item['rss_id']) for item in data_query.fetchall()]
     if len(all_rss_ids) == 0:
