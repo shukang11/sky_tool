@@ -76,8 +76,7 @@ def set_nickname():
     params = request.values or request.get_json() or {}
     if request.method == "GET":
         return response_succ(body={"nickname": user.nickname or ""})
-
-    new_name = params.get("nickname")
+    new_name = params.get("nickname") or ''
     user.nickname = new_name
     db.session.commit()
     return user_info()
