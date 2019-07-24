@@ -109,15 +109,23 @@ class Config:
 
     @classmethod
     def init_app(app, *args, **kwargs):
-        filename=os.path.join(Config.LOGGING_DIR, 'debug.log')
-        if not os.path.exists(filename):
-            os.makedirs(Config.LOGGING_DIR)
-            open(filename, 'w').close()
+        log_level_configs = {
+            logging.DEBUG: 'debug.log',
+            logging.ERROR: 'error.log'
+            }
+        for level, file_name in log_level_configs.items():
+            level:str = logging.getLevelName(level)
+            filename=os.path.join(Config.LOGGING_DIR, file_name)
+            if not os.path.exists(Config.LOGGING_DIR):
+                os.makedirs(Config.LOGGING_DIR)
+
+            if not os.path.exists(filename):
+                open(filename, 'w').close()
             
-        logging.basicConfig(
-            filename=filename, 
-            level=logging.WARNING
-            )
+            logging.basicConfig(
+                filename=filename, 
+                level=level
+                )
 
 
 class DevelopmentConfig(Config):
