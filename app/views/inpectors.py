@@ -10,4 +10,11 @@ def api_before_request():
     ip = request.remote_addr
     path = request.path
     params = request.values.to_dict() or request.get_json() or {}
-    logging.info('{ip}|{path}|{params}'.format(ip=ip, path=path, params=str(params)))
+    userId = ""
+    # 获得用户
+    token = params.get("token")
+    if token:
+        # check
+        user: User = User.get_user(token=token)
+        if user: userId = str(user.id)
+    logging.info('{ip}|{userId}|{path}|{params}'.format(ip=ip, userId=userId, path=path, params=str(params)))
