@@ -13,7 +13,9 @@ class Config:
 
 
     """配置上传文件相关"""
-    UPLOAD_FOLDER = os.path.join(os.path.join(os.path.dirname("__file__"), os.path.pardir), 'disk')
+    
+    UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), "..", "disk"))
+    # UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
     ALLOWED_EXTENSIONS = ('txt', 'png', 'jpg', 'jpeg')
 
     """Flask Uploads 配置"""

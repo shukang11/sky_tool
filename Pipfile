@@ -16,9 +16,10 @@ celery = "*"
 apscheduler = "*"
 flask-uploads = "*"
 feedparser = "*"
-flask-socketio = "*"
+flask-socketio = "==3.1.2"
 eventlet = "*"
 gunicorn = "==18.0"
+python-dotenv = "*"
 
 [dev-packages]
 mypy = "*"
