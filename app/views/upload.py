@@ -19,9 +19,9 @@ def upload():
     for file in files:
         file: FileStorage = file
         extension = file.filename.split('.')
-        identifier = str(uuid.uuid4()).replace("-", "")+"."+extension[1]
+        ext: str = extension[1]
+        identifier = str(uuid.uuid4()).replace("-", "")+"."+ext.lower()
         try:
-            print(identifier)
             rec = fileStorage.save(file, name=identifier)
             fileObj = FileModel(file_hash=identifier, file_name=file.filename, file_type=file.mimetype)
             fileObj.save(commit=True)
