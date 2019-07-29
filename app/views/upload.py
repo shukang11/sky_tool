@@ -1,14 +1,15 @@
 import uuid
 import os
 from werkzeug.datastructures import FileStorage
-from flask import request, jsonify, render_template, current_app
+from flask import request, jsonify, render_template, current_app, g
 from app.utils.ext import fileStorage, db
 from ..views import api
-from app.utils import response_succ, CommonError
-from app.models import FileModel
+from app.utils import response_succ, CommonError, login_require
+from app.models import FileModel, FileUserModel
 
 
 @api.route('/upload', methods=['POST'])
+@login_require
 def upload():
     # 如果是单个文件
     # file = request.files["files"]
@@ -24,7 +25,13 @@ def upload():
         try:
             rec = fileStorage.save(file, name=identifier)
             fileObj = FileModel(file_hash=identifier, file_name=file.filename, file_type=file.mimetype)
-            fileObj.save(commit=True)
+            fileObj.save()
+            db.session.flush()
+            fileId = fileObj.file_id
+            userId = g.current_user.id
+            relationObj = FileUserModel(user_id=userId, file_id=fileId)
+            relationObj.save(commit=True)
+            
             resp.append({
                 "origin": file.filename,
                 "fileName": fileStorage.url(rec)
@@ -37,8 +44,12 @@ def upload():
 
 
 @api.route('/file/list', methods=['POST', 'GET'])
+@login_require
 def listall():
-    allFiles = FileModel.query_all(FileModel)
+    userId = g.current_user.id
+    allFiles = db.session.query(FileModel, FileUserModel).\
+        filter(FileModel.file_id==FileUserModel.file_id).\
+        filter(FileUserModel.user_id==userId).all()
     payload = []
     for file in allFiles:
         f: FileModel = file

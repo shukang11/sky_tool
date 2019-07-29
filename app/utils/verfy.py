@@ -3,6 +3,20 @@ from app.utils.ext import request, db, jsonify, g
 from app.utils import CommonError, UserError
 from app.models import User
 
+def login_option(func):
+    
+    @wraps(func)
+    def decorator_view(*args, **kwargs):
+        params = request.values or request.get_json() or {}
+        token = params.get("token")
+        if token:
+            user = User.get_user(token=token)
+        # check
+        if user:
+            g.current_user = user
+        
+        return func(*args, **kwargs)
+    return decorator_view
 
 def login_require(func):
     """
