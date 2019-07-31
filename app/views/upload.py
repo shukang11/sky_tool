@@ -47,7 +47,7 @@ def upload():
 @login_require
 def listall():
     userId = g.current_user.id
-    allFiles = db.session.query(FileModel, FileUserModel).\
+    allFiles = db.session.query(FileModel).\
         filter(FileModel.file_id==FileUserModel.file_id).\
         filter(FileUserModel.user_id==userId).all()
     payload = []
