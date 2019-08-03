@@ -43,7 +43,7 @@ def upload():
     return response_succ(body=resp)
 
 
-@api.route('/file/list', methods=['POST', 'GET'])
+@api.route('/file/list', methods=['POST'])
 @login_require
 def listall():
     userId = g.current_user.id
@@ -60,8 +60,6 @@ def listall():
             "hash": f.file_hash,
             "url": fileStorage.url(f.file_hash)
         })
-    if request.method == "GET":
-        return render_template("all_images.html", images=payload)
     return response_succ(body=payload)
 
 

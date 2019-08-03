@@ -7,7 +7,7 @@ def login_option(func):
     
     @wraps(func)
     def decorator_view(*args, **kwargs):
-        user = get_user_from_request(request)
+        user = get_user_from_request(request, False)
         if user is User:
             g.current_user = user
         
@@ -22,7 +22,7 @@ def login_require(func):
     """
     @wraps(func)
     def decorator_view(*args, **kwargs):
-        userOrError: any = get_user_from_request(request)
+        userOrError: any = get_user_from_request(request, True)
         if not userOrError:
             return UserError.get_error(40204)
         if isinstance(userOrError, User):
@@ -32,15 +32,19 @@ def login_require(func):
         return func(*args, **kwargs)
     return decorator_view
 
-def get_user_from_request(request) -> any:
+def get_user_from_request(request, isforce: bool) -> any:
     params = request.values or request.get_json() or {}
-    token = params.get("token")
+    alise: str = "token"
+    token = params.get(alise)
     if not token:
-        token = session.get("token")
+        token = session.get(alise)
     if not token:
-        token = request.cookies.get("token")
+        token = request.cookies.get(alise)
     if not token:
-        return CommonError.get_error(40000)
+        if isforce:
+            return CommonError.get_error(43000)
+        else:
+            return CommonError.get_error(40000)  
     user = User.get_user(token=token)
     return user
     
