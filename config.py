@@ -154,7 +154,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/sky_tool'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:12345678@localhost/sky_tool'
 
     """Celery 配置"""
     from datetime import timedelta
