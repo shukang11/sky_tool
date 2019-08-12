@@ -135,7 +135,7 @@ class DevelopmentConfig(Config):
 
     # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(root_dir, 'data-dev.sqlite')
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:12345678@localhost/sksksksk'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:12345678@localhost/sky_tool_dev'
     # 'mysql://root:12345678@localhost/sky_tool_dev'
     SERVICE_TOKEN_SUFFIX = 'im_token_suffix'
     # 打开数据库语句输出
