@@ -1,10 +1,11 @@
 import re
+import time
 import logging
 import feedparser
 from celery_tasks import db
 import pymysql
 from sqlalchemy.sql import text
-from app.utils import get_unix_time_tuple, get_domain
+from app.utils import get_unix_time_tuple, filter_all_img_src
 
 def parser_feed(feed_url: str) -> any:
     feeds = feedparser.parse(feed_url)
@@ -55,11 +56,14 @@ def parse_inner(url: str, payload: dict) -> bool:
         descript = ""
         title = parsed["title"]
         link = parsed["link"]
+        cover_img = parsed["cover_img"] if hasattr(parsed, 'cover_img') else ''
+        published = parsed["published"]
         timeLocal = get_unix_time_tuple()
         query = """
-        INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
-        VALUES('{url}', '{link}', '{title}', '{descript}', {time}) on duplicate key update add_time='{time}';
-        """.format(url=url, link=link, title=title, descript=text(descript), time=timeLocal)
+        INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, content_image_cover, published_time, add_time)
+        VALUES('{url}', '{link}', '{title}', '{descript}', '{cover_img}', '{publish_time}', {time}) on duplicate key update add_time='{time}';
+        """.format(url=url, link=link, title=title, descript=text(descript), cover_img=cover_img, publish_time=published, time=timeLocal)
+        logging.info(query)
         db.query(query)
     return True
 
@@ -85,11 +89,15 @@ def parse_rss20(item: dict) -> dict:
     result = {}
     title: str = item["title"]
     summary: str = item["summary"]
+    imgs = filter_all_img_src(summary)
     link: str = item["id"]
-    published: str = item["published"]
+    published = item["published_parsed"]
+    published = str(time.mktime(published))
     result.setdefault("title", title)
     result.setdefault("descript", summary)
     result.setdefault("link", link)
+    if imgs:
+        result.setdefault("cover_img", imgs[0])
     result.setdefault('published', published)
     return result
 

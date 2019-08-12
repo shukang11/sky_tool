@@ -9,7 +9,7 @@ import hashlib
 import random
 import datetime
 import time
-
+import re
 
 def get_unix_time_tuple(date=datetime.datetime.now(), millisecond=False):
     """ get time tuple
@@ -126,3 +126,15 @@ def get_domain(url: str):
     parsed_uri = urlparse(url)
     domain = '{uri.netloc}'.format(uri=parsed_uri)
     return domain
+
+def filter_all_img_src(content: str) -> list:
+    replace_pattern = r'<[img|IMG].*?/>' #img标签的正则式
+    img_url_pattern = r'.+?src="(\S+)"' #img_url的正则式
+    replaced_img_url_list = []
+    img_url_list = []
+    need_replace_list = re.findall(replace_pattern, content)#找到所有的img标签
+    for tag in need_replace_list:
+        imgs = re.findall(img_url_pattern, tag)
+        if imgs:
+            img_url_list.append(imgs[0])#找到所有的img_url
+    return img_url_list
