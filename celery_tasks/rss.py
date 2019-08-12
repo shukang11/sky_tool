@@ -40,7 +40,7 @@ def parse_inner(url: str, payload: dict) -> bool:
     if len(payload) == 0: return False
     domain = get_domain(url)
     operator_map = {
-        "www.zhihu.com": parse_zhihu
+        "www.zhihu.com": parse_rss20
     }
     operator = operator_map.get(domain)
     if not operator:
@@ -59,11 +59,10 @@ def parse_inner(url: str, payload: dict) -> bool:
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
         VALUES('{url}', '{link}', '{title}', '{descript}', {time}) on duplicate key update add_time='{time}';
         """.format(url=url, link=link, title=title, descript=text(descript), time=timeLocal)
-        logging.info("query == "+ str(query))
         db.query(query)
     return True
 
-def parse_zhihu(item: dict) -> dict:
+def parse_rss20(item: dict) -> dict:
     """ 
     知乎订阅解析
     {
