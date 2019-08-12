@@ -115,3 +115,14 @@ def contain_emoji(content: str):
         if is_emoji(c):
             return True
     return False
+
+def get_domain(url: str):
+    """ get domain from url by given
+    
+    Args: str type
+    Return: str type, return domain if can get
+    """
+    from urllib.parse import urlparse
+    parsed_uri = urlparse(url)
+    domain = '{uri.netloc}'.format(uri=parsed_uri)
+    return domain

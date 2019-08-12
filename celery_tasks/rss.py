@@ -1,8 +1,10 @@
 import re
+import logging
 import feedparser
 from celery_tasks import db
 import pymysql
-from app.utils import get_unix_time_tuple, contain_emoji
+from sqlalchemy.sql import text
+from app.utils import get_unix_time_tuple, get_domain
 
 def parser_feed(feed_url: str) -> any:
     feeds = feedparser.parse(feed_url)
@@ -36,23 +38,55 @@ def parser_feed(feed_url: str) -> any:
 def parse_inner(url: str, payload: dict) -> bool:
     if not payload: return False
     if len(payload) == 0: return False
+    domain = get_domain(url)
+    operator_map = {
+        "www.zhihu.com": parse_zhihu
+    }
+    operator = operator_map.get(domain)
+    if not operator:
+        return False
     version = payload['version'] if hasattr(payload, 'version') else ''
     title = payload['title'] or '无标题'
-    link = payload['link']
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
-        descript = item['summary'] if hasattr(item, "summary") else '' 
-        title = item['title'] if hasattr(item, "title") else '' 
-        html_rex = r'<.*>.*?</.*>'
-        result = re.match(html_rex, descript)
-        if contain_emoji(title):
-            return False
-        if result or contain_emoji(descript):
-            descript = ""
+        parsed = operator(item)
+        descript = ""
+        title = parsed["title"]
+        link = parsed["link"]
+        timeLocal = get_unix_time_tuple()
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, add_time)
-        VALUES("{0}", "{1}", "{2}", "{3}", {4}) on duplicate key update add_time="{5}";
-        """.format(url, link, title, pymysql.escape_string(descript), get_unix_time_tuple(), get_unix_time_tuple())
+        VALUES('{url}', '{link}', '{title}', '{descript}', {time}) on duplicate key update add_time='{time}';
+        """.format(url=url, link=link, title=title, descript=text(descript), time=timeLocal)
+        logging.info("query == "+ str(query))
         db.query(query)
     return True
+
+def parse_zhihu(item: dict) -> dict:
+    """ 
+    知乎订阅解析
+    {
+        "title": "",
+        "title_detail": {"type": "text/plain", "language": null, "base": "https://www.zhihu.com/rss", "value": "《彩虹六号：围攻》咖啡厅关卡探讨空间类型组构"},
+        "links": [{"rel": "alternate", "type": "text/html", "href": "http://zhuanlan.zhihu.com/p/75380766?utm_campaign=rss&utm_medium=rss&utm_source=rss&utm_content=title"}]
+        "link": "",
+        "summary": "<>",
+        "summary_detail": {"type": "text/html", "language": null, "base": "https://www.zhihu.com/rss", "value": "<>"},
+        "authors": [{"name": "暴走的巫師"}],
+        "author": "暴走的巫師", 
+        "author_detail": {"name": "暴走的巫師"}, 
+        "published": "Thu, 01 Aug 2019 19:30:36 +0800", 
+        "published_parsed": 12334323423, 
+        "id": "http://zhuanlan.zhihu.com/p/75380766", 
+        "guidislink": false
+    }
+    """
+    result = {}
+    title: str = item["title"]
+    summary: str = item["summary"]
+    link: str = item["id"]
+    result.setdefault("title", title)
+    result.setdefault("descript", summary)
+    result.setdefault("link", link)
+    return result
