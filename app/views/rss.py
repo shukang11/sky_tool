@@ -165,7 +165,8 @@ def rss_content_list():
         SELECT bao_rss.rss_link FROM bao_rss  WHERE bao_rss.rss_id IN ( # 筛选当前用户订阅的地址
         {rss_ids}
         )
-    )
+    ) 
+    AND bao_rss_content.content_title != ''
     ORDER BY add_time {order} limit {limit} offset {offset};
     """.format( rss_ids=query_rss_ids,
                 order='DESC' if time_desc else 'ASC', 
