@@ -1,5 +1,5 @@
 import logging
-
+import time
 from app.utils.ext import request, g
 from app.models import User
 
@@ -17,4 +17,5 @@ def api_before_request():
         # check
         user: User = User.get_user(token=token)
         if user: userId = str(user.id)
-    logging.info('{ip}|{userId}|{path}|{params}'.format(ip=ip, userId=userId, path=path, params=str(params)))
+    localTime = time.strftime("%m-%d %H:%M:%S", time.localtime())
+    logging.info('{time}|{ip}|{userId}|{path}|{params}'.format(time=localTime,ip=ip, userId=userId, path=path, params=str(params)))
