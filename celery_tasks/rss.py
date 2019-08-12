@@ -38,11 +38,12 @@ def parser_feed(feed_url: str) -> any:
 def parse_inner(url: str, payload: dict) -> bool:
     if not payload: return False
     if len(payload) == 0: return False
-    domain = get_domain(url)
     operator_map = {
-        "www.zhihu.com": parse_rss20
+        "rss20": parse_rss20,
+        "atom10": parse_atom,
+        "rss10": parse_rss10,
     }
-    operator = operator_map.get(domain)
+    operator = operator_map.get(payload["version"]) or parse_rss20
     if not operator:
         return False
     version = payload['version'] if hasattr(payload, 'version') else ''
@@ -85,7 +86,15 @@ def parse_rss20(item: dict) -> dict:
     title: str = item["title"]
     summary: str = item["summary"]
     link: str = item["id"]
+    published: str = item["published"]
     result.setdefault("title", title)
     result.setdefault("descript", summary)
     result.setdefault("link", link)
+    result.setdefault('published', published)
     return result
+
+def parse_rss10(item: dict) -> dict:
+    return parse_rss20(item)
+
+def parse_atom(item: dict) -> dict:
+    return parse_rss20(item)

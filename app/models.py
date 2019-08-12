@@ -169,12 +169,16 @@ class RssContentModel(db.Model, BaseModel):
     content_link = Column(String(255), unique=True, nullable=True)
     content_title = Column(String(255), nullable=True)
     content_description = Column(TEXT, nullable=True)
+    content_image_cover = Column(String(255), nullable=True)
+    published_time = Column(String(64), nullable=True)
     add_time = Column(String(20), nullable=True)
 
-    def __init__(self, link: str, baseurl: str, title: str, description: str, add_time: str=None):
+    def __init__(self, link: str, baseurl: str, title: str, description: str, cover_img: str, published_time: str, add_time: str=None):
         self.content_link = link
         self.content_base = baseurl
         self.content_title = title
+        self.published_time = published_time
+        self.content_image_cover = cover_img
         self.content_description = description
         self.add_time = add_time or get_unix_time_tuple()
 
