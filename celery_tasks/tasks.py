@@ -66,17 +66,32 @@ def async_parser_feed(url: str, user_id: int = None):
     """
     taskid = None
     parse_result = False
-
     if hasattr(async_parser_feed.request, 'task'):
-        taskid = async_parser_feed.request.id
+        r = async_parser_feed.request
+        sql = """
+        INSERT INTO bao_task_record(task_id, tast_name, user_id, argsrepr, kwargs, begin_at, is_succ) 
+        VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}', '{is_succ}') 
+        ON DUPLICATE KEY UPDATE begin_at='{begin_at}';
+        """.format(task_id=r.id,
+                    tast_name=r.task,
+                    user_id=0,
+                    argsrepr=pymysql.escape_string(
+                        str(r.args)),
+                    kwargs=pymysql.escape_string(
+                        str(r.kwargs)),
+                    begin_at=get_unix_time_tuple(),
+                    is_succ=int(parse_result))
+        db.query(sql)
     result = parser_feed(url)
     if result:
-        isSuccess = parse_inner(url, result)
+        parse_result = parse_inner(url, result)
     
-    if taskid:
+    if hasattr(async_parser_feed.request, 'task'):
+        r = async_parser_feed.request
         sql = """
         UPDATE bao_task_record SET end_at='{end_at}', is_succ={is_succ} WHERE task_id='{task_id}'
-        """.format(task_id=taskid, is_succ=int(isSuccess), end_at=get_unix_time_tuple())
+        """.format(task_id=r.id, is_succ=int(parse_result), end_at=get_unix_time_tuple())
+        print(sql)
         db.query(sql)
     return result
 

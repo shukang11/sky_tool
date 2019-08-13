@@ -7,24 +7,27 @@ import pymysql
 from sqlalchemy.sql import text
 from app.utils import get_unix_time_tuple, filter_all_img_src
 
+
 def parser_feed(feed_url: str) -> any:
     feeds = feedparser.parse(feed_url)
     payload = {}
     if not hasattr(feeds, 'version'):
         return payload
     version = feeds.version
-    title = feeds.feed.title if hasattr(feeds.feed, 'title') else '' # rss的标题
+    title = feeds.feed.title if hasattr(feeds.feed, 'title') else ''  # rss的标题
     link = feeds.feed.link if hasattr(feeds.feed, 'link') else None  # 链接
-    if not link: return None
-    
+    if not link:
+        return None
+
     payload['version'] = version
     payload['title'] = title
     payload['link'] = link
     subtitle = None
+    print("rss version : " + str(version))
     if version == 'atom10':
         subtitle = ''
     elif version == 'rss20':
-        subtitle = feeds.feed.subtitle or '' # 子标题
+        subtitle = feeds.feed.subtitle or ''  # 子标题
     payload['subtitle'] = subtitle
 
     result = []
@@ -36,9 +39,12 @@ def parser_feed(feed_url: str) -> any:
     payload['items'] = result
     return payload
 
+
 def parse_inner(url: str, payload: dict) -> bool:
-    if not payload: return False
-    if len(payload) == 0: return False
+    if not payload:
+        return False
+    if len(payload) == 0:
+        return False
     operator_map = {
         "rss20": parse_rss20,
         "atom10": parse_atom,
@@ -56,16 +62,24 @@ def parse_inner(url: str, payload: dict) -> bool:
         descript = ""
         title = parsed["title"]
         link = parsed["link"]
-        cover_img = parsed["cover_img"] if hasattr(parsed, 'cover_img') else ''
+        cover_img = parsed.get('cover_img') or ''
         published = parsed["published"]
         timeLocal = get_unix_time_tuple()
         query = """
         INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, content_image_cover, published_time, add_time)
         VALUES('{url}', '{link}', '{title}', '{descript}', '{cover_img}', '{publish_time}', {time}) on duplicate key update add_time='{time}';
-        """.format(url=url, link=link, title=title, descript=text(descript), cover_img=cover_img, publish_time=published, time=timeLocal)
-        logging.info(query)
+        """.format(
+            url=url,
+            link=link,
+            title=title,
+            descript=text(descript),
+            cover_img=cover_img,
+            publish_time=published,
+            time=timeLocal)
+        print(query)
         db.query(query)
     return True
+
 
 def parse_rss20(item: dict) -> dict:
     """ 
@@ -96,13 +110,15 @@ def parse_rss20(item: dict) -> dict:
     result.setdefault("title", title)
     result.setdefault("descript", summary)
     result.setdefault("link", link)
-    if imgs:
+    if len(imgs) > 0:
         result.setdefault("cover_img", imgs[0])
     result.setdefault('published', published)
     return result
 
+
 def parse_rss10(item: dict) -> dict:
     return parse_rss20(item)
+
 
 def parse_atom(item: dict) -> dict:
     return parse_rss20(item)
