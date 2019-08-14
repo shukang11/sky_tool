@@ -184,8 +184,10 @@ def rss_content_list():
         'link': item['content_link'],
         'base': item['content_base'],
         'add_time': item['add_time'],
+        'published_time': float(item['published_time']),
         'title': item['content_title'],
         'id': item['content_id'],
+        'cover_img': item['content_image_cover'],
     } for item in data_query.fetchall()]
     return response_succ(body=payload)
 

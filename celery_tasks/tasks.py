@@ -91,7 +91,6 @@ def async_parser_feed(url: str, user_id: int = None):
         sql = """
         UPDATE bao_task_record SET end_at='{end_at}', is_succ={is_succ} WHERE task_id='{task_id}'
         """.format(task_id=r.id, is_succ=int(parse_result), end_at=get_unix_time_tuple())
-        print(sql)
         db.query(sql)
     return result
 

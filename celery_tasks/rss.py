@@ -6,7 +6,7 @@ from celery_tasks import db
 import pymysql
 from sqlalchemy.sql import text
 from app.utils import get_unix_time_tuple, filter_all_img_src
-
+import logging
 
 def parser_feed(feed_url: str) -> any:
     feeds = feedparser.parse(feed_url)
@@ -23,7 +23,6 @@ def parser_feed(feed_url: str) -> any:
     payload['title'] = title
     payload['link'] = link
     subtitle = None
-    print("rss version : " + str(version))
     if version == 'atom10':
         subtitle = ''
     elif version == 'rss20':
@@ -76,7 +75,6 @@ def parse_inner(url: str, payload: dict) -> bool:
             cover_img=cover_img,
             publish_time=published,
             time=timeLocal)
-        print(query)
         db.query(query)
     return True
 
@@ -105,7 +103,7 @@ def parse_rss20(item: dict) -> dict:
     summary: str = item["summary"]
     imgs = filter_all_img_src(summary)
     link: str = item["id"]
-    published = item["published_parsed"]
+    published = float(item["published_parsed"])
     published = str(time.mktime(published))
     result.setdefault("title", title)
     result.setdefault("descript", summary)
@@ -122,3 +120,4 @@ def parse_rss10(item: dict) -> dict:
 
 def parse_atom(item: dict) -> dict:
     return parse_rss20(item)
+
