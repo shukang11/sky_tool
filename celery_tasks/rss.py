@@ -103,7 +103,7 @@ def parse_rss20(item: dict) -> dict:
     summary: str = item["summary"]
     imgs = filter_all_img_src(summary)
     link: str = item["id"]
-    published = item["published_parsed"]
+    published = item["published_parsed"] or '0'
     published = str(time.mktime(published))
     result.setdefault("title", title)
     result.setdefault("descript", summary)

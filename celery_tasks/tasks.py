@@ -123,7 +123,7 @@ def parse_rsses():
                    begin_at=get_unix_time_tuple())
         db.query(sql)
     sql = """
-    SELECT bao_rss.rss_link FROM bao_rss;
+    SELECT bao_rss.rss_link FROM bao_rss WHERE rss_link = 1;
     """
     links = db.query(sql)
     for link in links:
