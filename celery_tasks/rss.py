@@ -98,20 +98,37 @@ def parse_rss20(item: dict) -> dict:
         "guidislink": false
     }
     """
-    result = {}
-    title: str = item["title"]
-    summary: str = item["summary"]
-    imgs = filter_all_img_src(summary)
-    link: str = item["id"]
-    published = item["published_parsed"] or '0'
-    published = str(time.mktime(published))
-    result.setdefault("title", title)
-    result.setdefault("descript", summary)
-    result.setdefault("link", link)
-    if len(imgs) > 0:
-        result.setdefault("cover_img", imgs[0])
-    result.setdefault('published', published)
-    return result
+    try:
+        for k in item.keys():
+            if k  not in ["summary", "summary_detail"]:
+                print(str(k) + "==>" + str(item[k]) + " type is " + str(type(item[k])))
+        result = {}
+        title: str = item["title"]
+        summary: str = item["summary"]
+        imgs = filter_all_img_src(summary)
+        link: str = ""
+        published = time.gmtime(time.time())
+        if hasattr(item, "id"):
+            link = item["id"]
+        elif hasattr(item, "link"):
+            link = item["link"]
+        
+        if hasattr(item, "published"):
+            published = item["published"]
+        if hasattr(item, "published_parsed"):
+            published = item["published_parsed"]
+
+        published = str(time.mktime(published))
+        result.setdefault("title", title)
+        result.setdefault("descript", summary)
+        result.setdefault("link", link)
+        if len(imgs) > 0:
+            result.setdefault("cover_img", imgs[0])
+        result.setdefault('published', published)
+        return result
+    except Exception as error:
+        print(str(error))
+        return None
 
 
 def parse_rss10(item: dict) -> dict:

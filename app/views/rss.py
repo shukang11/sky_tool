@@ -2,7 +2,7 @@ import re
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
+from app.utils import response_succ, boolValue, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
 
@@ -215,4 +215,4 @@ def rss_record():
     """.format(read_url_id=data_query['content_id'], read_user_id=data_query['user_id'], read_time=get_unix_time_tuple())
     data_query = db.session.execute(sql)
     db.session.commit()
-    return response_succ(body={'state': 'success'})
+    return response_succ(body=boolValue(True))

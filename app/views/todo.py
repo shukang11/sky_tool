@@ -3,7 +3,7 @@ from ..views import api
 from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require
 from app.utils.ext import g, NoResultFound
 from app.models import db, TodoModel
-
+import json
 
 @api.route("/todo/add", methods=["POST"])
 @login_require
@@ -113,19 +113,16 @@ def filter_todo(filter: str = None):
         todos = todos.filter(TodoModel.todo_state == 2).all()
     if option_filter == "all":
         todos = todos.filter(TodoModel.todo_state != 3).all()
-    if not todos:
-        return CommonError.get_error(40000)
-
-    if len(todos) == 0:
-        return CommonError.error_toast(msg="没有待办")
-
-    result = []
+    result = list()
+    if not todos or len(todos) == 0:
+        response_succ(body=result)
     for todo in todos:
         result.append({
             "todo_id": todo.todo_id,
             "todo_title": todo.todo_title,
             "todo_state": todo.todo_state
         })
+    print(result)
     return response_succ(body=result)
 
 
