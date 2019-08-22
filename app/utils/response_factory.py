@@ -84,8 +84,13 @@ def response_succ(status_code=200, body={}, header=None):
     if status_code not in success_codes:
         raise ValueError("statusCode is not in successCodes")
     try:
-        if body:
-            body = jsonify(body)
+        result = {
+            "data": body,
+            "msg": "",
+            "code": status_code
+        }
+        if result:
+            result = jsonify(result)
     except Exception as _:
         raise ValueError("Unknown body")
     if header is None:
@@ -95,7 +100,7 @@ def response_succ(status_code=200, body={}, header=None):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': '*'
         }
-    return body, status_code, header
+    return result, status_code, header
 
 
 def response_error(error_code=0, msg=None, http_code=0, header=None):

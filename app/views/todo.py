@@ -115,14 +115,13 @@ def filter_todo(filter: str = None):
         todos = todos.filter(TodoModel.todo_state != 3).all()
     result = list()
     if not todos or len(todos) == 0:
-        response_succ(body=result)
+        response_succ(body=())
     for todo in todos:
         result.append({
             "todo_id": todo.todo_id,
             "todo_title": todo.todo_title,
             "todo_state": todo.todo_state
         })
-    print(result)
     return response_succ(body=result)
 
 
