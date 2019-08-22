@@ -57,25 +57,30 @@ def parse_inner(url: str, payload: dict) -> bool:
     subtitle = payload['subtitle']
     items = payload['items']
     for item in items:
-        parsed = operator(item)
-        descript = ""
-        title = parsed["title"]
-        link = parsed["link"]
-        cover_img = parsed.get('cover_img') or ''
-        published = parsed["published"]
-        timeLocal = get_unix_time_tuple()
-        query = """
-        INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, content_image_cover, published_time, add_time)
-        VALUES('{url}', '{link}', '{title}', '{descript}', '{cover_img}', '{publish_time}', {time}) on duplicate key update add_time='{time}';
-        """.format(
-            url=url,
-            link=link,
-            title=title,
-            descript=text(descript),
-            cover_img=cover_img,
-            publish_time=published,
-            time=timeLocal)
-        db.query(query)
+        try:
+            parsed = operator(item)
+            descript = ""
+            title = parsed["title"]
+            link = parsed["link"]
+            cover_img = parsed.get('cover_img') or ''
+            published = parsed["published"]
+            timeLocal = get_unix_time_tuple()
+            query = """
+            INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, content_image_cover, published_time, add_time)
+            VALUES('{url}', '{link}', '{title}', '{descript}', '{cover_img}', '{publish_time}', {time}) on duplicate key update add_time='{time}';
+            """.format(
+                url=url,
+                link=link,
+                title=title,
+                descript=text(descript),
+                cover_img=cover_img,
+                publish_time=published,
+                time=timeLocal)
+            db.query(query)
+        except Exception as error:
+            print(error)
+            continue
+        
     return True
 
 
@@ -99,9 +104,6 @@ def parse_rss20(item: dict) -> dict:
     }
     """
     try:
-        for k in item.keys():
-            if k  not in ["summary", "summary_detail"]:
-                print(str(k) + "==>" + str(item[k]) + " type is " + str(type(item[k])))
         result = {}
         title: str = item["title"]
         summary: str = item["summary"]

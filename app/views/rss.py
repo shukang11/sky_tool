@@ -195,6 +195,9 @@ def rss_content_list():
 @api.route('/rss/record', methods=['GET', 'POST'])
 @login_require
 def rss_record():
+    """ 
+    记录rss的阅读记录
+    """
     params = request.values or request.get_json() or {}
     url = str(params.get('url'))
     if not url:
