@@ -108,12 +108,8 @@ def parse_rss20(item: dict) -> dict:
         title: str = item["title"]
         summary: str = item["summary"]
         imgs = filter_all_img_src(summary)
-        link: str = ""
+        link: str = item["link"] or item["id"] or ""
         published = time.gmtime(time.time())
-        if hasattr(item, "id"):
-            link = item["id"]
-        elif hasattr(item, "link"):
-            link = item["link"]
         
         if hasattr(item, "published"):
             published = item["published"]
