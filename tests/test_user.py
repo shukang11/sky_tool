@@ -44,7 +44,7 @@ class TestUser(object):
             "password": self._password
         })
         assert rv.status_code == 200
-        return rv.json["token"]
+        return rv.json["data"]["token"]
 
     def test_user_info(self, client):
         token = self.test_login(client)
@@ -52,8 +52,8 @@ class TestUser(object):
             "token": token
         })
         assert rv.status_code == 200
-        assert rv.json["email"] == self._email
-        assert rv.json["token"] == token
+        assert rv.json["data"]["email"] == self._email
+        assert rv.json["data"]["token"] == token
         
     def test_nickname(self, client):
         token = self.test_login(client)
@@ -70,4 +70,4 @@ class TestUser(object):
             "token": token
         })
         assert rv.status_code == 200
-        assert rv.json["nickname"] == test_nickname
+        assert rv.json["data"]["nickname"] == test_nickname
