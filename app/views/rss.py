@@ -157,7 +157,7 @@ def rss_content_list():
     data_query = db.session.execute(sql)
     all_rss_ids = [str(item['rss_id']) for item in data_query.fetchall()]
     if len(all_rss_ids) == 0:
-        return CommonError.error_toast(msg='no content')
+        return response_succ(body=[])
     query_rss_ids = ', '.join(all_rss_ids)
     # 查询 content
     sql = """

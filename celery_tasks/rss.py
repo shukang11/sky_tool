@@ -60,10 +60,11 @@ def parse_inner(url: str, payload: dict) -> bool:
         try:
             parsed = operator(item)
             descript = ""
-            title = parsed["title"]
-            link = parsed["link"]
+            title: str = parsed.get('title') or ''
+            link = parsed.get('link') or ''
             cover_img = parsed.get('cover_img') or ''
-            published = parsed["published"]
+            published = parsed.get('published') or ''
+            descript = parsed.get('descript') or ''
             timeLocal = get_unix_time_tuple()
             query = """
             INSERT INTO bao_rss_content(content_base, content_link, content_title, content_description, content_image_cover, published_time, add_time)
@@ -71,8 +72,8 @@ def parse_inner(url: str, payload: dict) -> bool:
             """.format(
                 url=url,
                 link=link,
-                title=title,
-                descript=text(descript),
+                title=pymysql.escape_string(title),
+                descript=pymysql.escape_string(descript),
                 cover_img=cover_img,
                 publish_time=published,
                 time=timeLocal)

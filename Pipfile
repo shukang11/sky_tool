@@ -20,6 +20,7 @@ flask-socketio = "==3.1.2"
 eventlet = "*"
 gunicorn = "==18.0"
 python-dotenv = "*"
+mypy = "*"
 
 [dev-packages]
 mypy = "*"
