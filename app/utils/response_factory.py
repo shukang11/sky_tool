@@ -6,7 +6,7 @@
 
 """
 
-from flask import jsonify
+from flask import jsonify, Response
 
 
 def __check_request(request="") -> str:
@@ -75,13 +75,22 @@ R403_FORBIDDEN = {}
 R404_NOT_FOUND = {}
 
 
+def boolValue(value: bool) -> dict:
+    return {"boolValue": value}
+
+
 def response_succ(status_code=200, body={}, header=None):
     success_codes = [200, 201, 202, 204]
     if status_code not in success_codes:
         raise ValueError("statusCode is not in successCodes")
     try:
-        if body:
-            body = jsonify(body)
+        result = {
+            "data": body,
+            "msg": "",
+            "code": status_code
+        }
+        if result:
+            result = jsonify(result)
     except Exception as _:
         raise ValueError("Unknown body")
     if header is None:
@@ -91,7 +100,7 @@ def response_succ(status_code=200, body={}, header=None):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': '*'
         }
-    return body, status_code, header
+    return result, status_code, header
 
 
 def response_error(error_code=0, msg=None, http_code=0, header=None):
@@ -124,7 +133,7 @@ def response_error(error_code=0, msg=None, http_code=0, header=None):
             'Access-Control-Allow-Method': '*'
         }
     data = __error_handler(msg=msg,
-                                   code=error_code,
-                                   request="{0} {1}".format(r.method, r.path))
+                           code=error_code,
+                           request="{0} {1}".format(r.method, r.path))
 
     return jsonify(data) or jsonify({"error": "cant jsonify"}), http_code, header

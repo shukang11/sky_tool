@@ -1,18 +1,18 @@
-FROM ubuntu:16.04
+FROM python:3
 
-MAINTAINER 804506054 "804506054@qq.com"
+# MAINTAINER 804506054 "804506054@qq.com"
+WORKDIR /sky_tool
 
 RUN apt-get update -y && \  
     apt-get install -y python3-pip python3-dev
 
-COPY ./requirements.txt /requirements.txt
+COPY ./requirements.txt /sky_tool/requirements.txt
 
-WORKDIR /
 
 RUN pip3 install -r requirements.txt
 
-COPY . /
+COPY . .
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "manager.py" ]
+CMD [ "python", "manager.py" ]

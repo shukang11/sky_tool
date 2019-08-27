@@ -154,7 +154,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/sky_tool'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:12345678@localhost/sky_tool'
 
     """Celery 配置"""
     from datetime import timedelta
@@ -171,7 +171,7 @@ class ProductionConfig(Config):
         },
         'celery_tasks.tasks.parse_rsses': {
             'task': 'celery_tasks.tasks.parse_rsses',
-            'schedule': timedelta(seconds=60*60*24*1),
+            'schedule': timedelta(seconds=60*60),
             'args': ()
         }
     }

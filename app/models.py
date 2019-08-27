@@ -8,7 +8,7 @@ from app.utils.strings import get_unix_time_tuple
 doc: http://docs.jinkan.org/docs/flask-sqlalchemy/models.html
 """
 
-__all__ = ['User', 'FileModel', 'LoginRecord', 'TodoModel', 'RssModel']
+__all__ = ['User', 'FileModel', 'FileUserModel', 'LoginRecord', 'TodoModel', 'RssModel']
 
 # 对外展示的
 tables = {}
@@ -79,9 +79,26 @@ class FileModel(db.Model, BaseModel):
     file_name = Column(String(255), nullable=True)
     file_type = Column(String(32), nullable=True)
 
+class FileUserModel(db.Model, BaseModel):
+    """ 文件与用户映射 """
+    __tablename__ = "bao_file_user"
+
+    file_user_id = Column(INTEGER, Sequence(start=1, increment=1,
+                                       name="file_user_id_sep"), primary_key=True, autoincrement=True)
+    user_id = Column(INTEGER, nullable=False)
+    file_id = Column(INTEGER, nullable=False)
+    add_time = Column(String(20), nullable=True)
+    file_user_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
+
+    def __init__(self, user_id: int, file_id: int, add_time: str=None):
+        self.user_id = user_id
+        self.file_id = file_id
+        self.file_user_state = 1
+        self.add_time = add_time or get_unix_time_tuple()
 
 @addModel
 class LoginRecord(db.Model, BaseModel):
+    """ 登录记录表 """
 
     __tablename__ = "bao_login_record"
 
@@ -94,6 +111,7 @@ class LoginRecord(db.Model, BaseModel):
 
 @addModel
 class TodoModel(db.Model, BaseModel):
+    """ Todo list """
     __tablename__ = "bao_todo"
 
     todo_id = Column(INTEGER, Sequence(start=1, increment=1,
@@ -105,6 +123,7 @@ class TodoModel(db.Model, BaseModel):
 
 @addModel
 class RssModel(db.Model, BaseModel):
+    """ rss 订阅 """
     __tablename__ = "bao_rss"
 
     rss_id = Column(INTEGER, Sequence(start=1, increment=1,
@@ -119,10 +138,11 @@ class RssModel(db.Model, BaseModel):
         self.rss_link = link
         self.rss_state = 1
         self.add_time = add_time or get_unix_time_tuple()
-    
+
 
 @addModel
 class RssUserModel(db.Model,  BaseModel):
+    """ rss 与用户映射 """
     __tablename__ = "bao_rss_user"
 
     rss_user_id = Column(INTEGER, Sequence(start=1, increment=1,
@@ -149,12 +169,16 @@ class RssContentModel(db.Model, BaseModel):
     content_link = Column(String(255), unique=True, nullable=True)
     content_title = Column(String(255), nullable=True)
     content_description = Column(TEXT, nullable=True)
+    content_image_cover = Column(String(255), nullable=True)
+    published_time = Column(String(64), nullable=True)
     add_time = Column(String(20), nullable=True)
 
-    def __init__(self, link: str, baseurl: str, title: str, description: str, add_time: str=None):
+    def __init__(self, link: str, baseurl: str, title: str, description: str, cover_img: str, published_time: str, add_time: str=None):
         self.content_link = link
         self.content_base = baseurl
         self.content_title = title
+        self.published_time = published_time
+        self.content_image_cover = cover_img
         self.content_description = description
         self.add_time = add_time or get_unix_time_tuple()
 

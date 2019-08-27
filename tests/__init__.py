@@ -20,4 +20,4 @@ class TestBase(object):
         rv = self._client.post("/api/user/login", json=params)
         print(params)
         assert rv.status_code == 200
-        return rv.json["token"] or ""
+        return rv.json["data"]["token"] or ""

@@ -1,4 +1,5 @@
 import time
+import logging
 import requests
 import pymysql
 from celery_tasks import celery_app, db
@@ -56,33 +57,40 @@ def async_email_to(subject: str, body: str, recipients: list):
 
 
 @celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
-def async_parser_feed(url: str, user_id: int=None):
+def async_parser_feed(url: str, user_id: int = None):
     """
     开始解析rss任务
     Args:
     url: rss地址
     Return: 字典，包含了解析的结果
     """
+    taskid = None
+    parse_result = False
     if hasattr(async_parser_feed.request, 'task'):
+        r = async_parser_feed.request
         sql = """
-        INSERT INTO bao_task_record(task_id, tast_name, user_id, argsrepr, kwargs, begin_at) 
-        VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}') 
+        INSERT INTO bao_task_record(task_id, tast_name, user_id, argsrepr, kwargs, begin_at, is_succ) 
+        VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}', '{is_succ}') 
         ON DUPLICATE KEY UPDATE begin_at='{begin_at}';
-        """.format(task_id=async_parser_feed.request.id,
-                tast_name=async_parser_feed.request.task,
-                user_id=user_id or 0,
-                argsrepr=pymysql.escape_string(
-                    str(async_parser_feed.request.args)),
-                kwargs=pymysql.escape_string(
-                    str(async_parser_feed.request.kwargs)),
-                begin_at=get_unix_time_tuple())
+        """.format(task_id=r.id,
+                    tast_name=r.task,
+                    user_id=0,
+                    argsrepr=pymysql.escape_string(
+                        str(r.args)),
+                    kwargs=pymysql.escape_string(
+                        str(r.kwargs)),
+                    begin_at=get_unix_time_tuple(),
+                    is_succ=int(parse_result))
         db.query(sql)
     result = parser_feed(url)
-    isSuccess = parse_inner(url, result)
+    if result:
+        parse_result = parse_inner(url, result)
+    
     if hasattr(async_parser_feed.request, 'task'):
+        r = async_parser_feed.request
         sql = """
         UPDATE bao_task_record SET end_at='{end_at}', is_succ={is_succ} WHERE task_id='{task_id}'
-        """.format(task_id=async_parser_feed.request.id, is_succ=int(isSuccess), end_at=get_unix_time_tuple())
+        """.format(task_id=r.id, is_succ=int(parse_result), end_at=get_unix_time_tuple())
         db.query(sql)
     return result
 
@@ -97,7 +105,7 @@ def report_local_ip():
     async_email_to(today, ifconfig_result, ['804506054@qq.com'])
 
 
-@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=False)
+@celery_app.task(default_retry_delay=300, max_retries=3, ignore_result=True)
 def parse_rsses():
     r = parse_rsses.request
     if hasattr(r, 'task'):
@@ -106,16 +114,16 @@ def parse_rsses():
         VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}') 
         ON DUPLICATE KEY UPDATE begin_at='{begin_at}';
         """.format(task_id=r.id,
-                tast_name=r.task,
-                user_id=0,
-                argsrepr=pymysql.escape_string(
-                    str(r.args)),
-                kwargs=pymysql.escape_string(
-                    str(r.kwargs)),
-                begin_at=get_unix_time_tuple())
+                   tast_name=r.task,
+                   user_id=0,
+                   argsrepr=pymysql.escape_string(
+                       str(r.args)),
+                   kwargs=pymysql.escape_string(
+                       str(r.kwargs)),
+                   begin_at=get_unix_time_tuple())
         db.query(sql)
     sql = """
-    SELECT bao_rss.rss_link FROM bao_rss;
+    SELECT bao_rss.rss_link FROM bao_rss WHERE bao_rss.rss_state = 1;
     """
     links = db.query(sql)
     for link in links:

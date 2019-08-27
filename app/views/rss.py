@@ -2,9 +2,10 @@ import re
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
+from app.utils import response_succ, boolValue, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
+
 
 @api.route("/rss/add", methods=["POST"])
 @login_require
@@ -16,9 +17,9 @@ def add_rss_source():
     source = params.get("source")
     if not source:
         return CommonError.get_error(40000)
-    
+
     bind_user_id = g.current_user.id
-    
+
     try:
         query = """
         SELECT * FROM bao_rss WHERE rss_link = '{}';
@@ -32,12 +33,12 @@ def add_rss_source():
             regex = r'(https?)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]'
             result = re.match(regex, source)
             if not result:
-                return  CommonError.error_toast("wrong link")
+                return CommonError.error_toast("wrong link")
             rss = RssModel(source)
             db.session.add(rss)
-            db.session.flush() # flush预提交，等于提交到数据库内存
+            db.session.flush()  # flush预提交，等于提交到数据库内存
             rss_id = rss.rss_id
-        
+
         query = """
         SELECT * FROM bao_rss_user WHERE user_id = {} and rss_id = {};
         """.format(bind_user_id, rss_id)
@@ -57,7 +58,7 @@ def add_rss_source():
         db.session.rollback()
         print(e)
         return CommonError.get_error(9999)
-    
+
 
 @api.route("/rss/limit", methods=["POST", "GET"])
 @login_require
@@ -66,7 +67,7 @@ def list_rss():
     """ 查看订阅列表 """
     params = request.values or request.get_json() or {}
     bind_user_id = g.current_user.id
-    # pages 
+    # pages
     pages = params.get('pages') or 0
     limit = params.get('limit') or 10
     sql = ''
@@ -134,20 +135,21 @@ def rss_content_list():
         limit = g.pageinfo['limit']
         offset = g.pageinfo['offset']
         pages = g.pageinfo['pages']
-    time_desc = bool(params.get('time_desc') or 1) # 0 升序 1 降序
+    time_desc = bool(params.get('time_desc') or 1)  # 0 升序 1 降序
     filter_rss_ids = params.get('filter_rss_ids')
     bind_user_id = g.current_user.id
 
     # query rss_ids
     if filter_rss_ids:
-        filter_rss_ids = [ids.strip() for ids in str(filter_rss_ids).split(',')]
+        filter_rss_ids = [ids.strip()
+                          for ids in str(filter_rss_ids).split(',')]
         filter_rss_ids = ', '.join(filter_rss_ids)
         sql = """
         SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id} AND bao_rss_user.rss_id IN ( # 筛选选择的rss_id
                 {filter}
             );
         """.format(user_id=bind_user_id, filter=filter_rss_ids)
-    else: 
+    else:
         sql = """
         SELECT bao_rss_user.rss_id FROM bao_rss_user WHERE bao_rss_user.user_id={user_id}
         """.format(user_id=bind_user_id)
@@ -155,9 +157,8 @@ def rss_content_list():
     data_query = db.session.execute(sql)
     all_rss_ids = [str(item['rss_id']) for item in data_query.fetchall()]
     if len(all_rss_ids) == 0:
-        return CommonError.error_toast(msg='no content')
+        return response_succ(body=[])
     query_rss_ids = ', '.join(all_rss_ids)
-    print(query_rss_ids)
     # 查询 content
     sql = """
     SELECT * FROM bao_rss_content
@@ -165,12 +166,13 @@ def rss_content_list():
         SELECT bao_rss.rss_link FROM bao_rss  WHERE bao_rss.rss_id IN ( # 筛选当前用户订阅的地址
         {rss_ids}
         )
-    )
+    ) 
+    AND bao_rss_content.content_title != ''
     ORDER BY add_time {order} limit {limit} offset {offset};
-    """.format( rss_ids=query_rss_ids,
-                order='DESC' if time_desc else 'ASC', 
-                limit=limit, offset=offset, 
-                user_id=bind_user_id)
+    """.format(rss_ids=query_rss_ids,
+               order='DESC' if time_desc else 'ASC',
+               limit=limit, offset=offset,
+               user_id=bind_user_id)
     # sqlalchemy执行sql
     data_query = db.session.execute(sql)
     total = data_query.rowcount
@@ -182,14 +184,20 @@ def rss_content_list():
         'link': item['content_link'],
         'base': item['content_base'],
         'add_time': item['add_time'],
+        'published_time': float(item['published_time']),
         'title': item['content_title'],
         'id': item['content_id'],
+        'cover_img': item['content_image_cover'],
     } for item in data_query.fetchall()]
     return response_succ(body=payload)
+
 
 @api.route('/rss/record', methods=['GET', 'POST'])
 @login_require
 def rss_record():
+    """ 
+    记录rss的阅读记录
+    """
     params = request.values or request.get_json() or {}
     url = str(params.get('url'))
     if not url:
@@ -210,4 +218,4 @@ def rss_record():
     """.format(read_url_id=data_query['content_id'], read_user_id=data_query['user_id'], read_time=get_unix_time_tuple())
     data_query = db.session.execute(sql)
     db.session.commit()
-    return response_succ(body={'state': 'success'})    
+    return response_succ(body=boolValue(True))
