@@ -63,9 +63,9 @@ class TestUser(object):
             "nickname": test_nickname
         })
         assert rv.status_code == 200
-        assert rv.json["nickname"] == test_nickname
-        assert rv.json["token"] == token
-        assert rv.json["email"] == self._email
+        assert rv.json["data"]["nickname"] == test_nickname
+        assert rv.json["data"]["token"] == token
+        assert rv.json["data"]["email"] == self._email
         rv =client.get("/api/user/nickname", json={
             "token": token
         })
