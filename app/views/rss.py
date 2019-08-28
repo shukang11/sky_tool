@@ -2,7 +2,7 @@ import re
 from flask import request
 from celery import Task
 from ..views import api
-from app.utils import response_succ, boolValue, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header
+from app.utils import response_succ, boolValue, CommonError, get_unix_time_tuple, login_require, pages_info_require, get_header, get_domain
 from app.utils.ext import g, db
 from app.models import RssModel, RssUserModel
 
@@ -183,6 +183,7 @@ def rss_content_list():
     payload['list'] = [{
         'link': item['content_link'],
         'base': item['content_base'],
+        'domain': get_domain(item['content_base']),
         'add_time': item['add_time'],
         'published_time': float(item['published_time']),
         'title': item['content_title'],

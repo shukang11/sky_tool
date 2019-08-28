@@ -30,7 +30,7 @@ def __check_request(request="") -> str:
     return request
 
 
-def __error_handler(msg=None, code=404, request="") -> dict:
+def __error_handler(msg=None, code=404, request="", data=None) -> dict:
     """
     将不正确的参数格式化返回
     :param msg: 错误信息
@@ -45,6 +45,7 @@ def __error_handler(msg=None, code=404, request="") -> dict:
         result["msg"] = msg
     if len(request) > 0:
         result["request"] = request
+    result['data'] = data
     return result
 
 
