@@ -83,6 +83,18 @@ def async_parser_feed(url: str, user_id: int = None):
                     is_succ=int(parse_result))
         db.query(sql)
     result = parser_feed(url)
+    sql = """
+    UPDATE bao_rss SET bao_rss.rss_subtitle = '{subtitle}', 
+    bao_rss.rss_title = '{title}', 
+    bao_rss.rss_version='{version}' 
+    WHERE bao_rss.rss_link='{link}';
+    """.format(
+        title=result.get('title') if result else '',
+        subtitle=result.get('subtitle') if result else '',
+        version=result.get('version') if result else '',
+        link=url
+    )
+    db.query(sql)
     if result:
         parse_result = parse_inner(url, result)
     

@@ -132,6 +132,7 @@ class RssModel(db.Model, BaseModel):
     rss_subtitle = Column(String(255), nullable=True)
     add_time = Column(String(20), nullable=True)
     rss_version = Column(String(10), nullable=True)
+    rss_title = Column(String(255), nullable=True, comment='订阅的标题')
     rss_state = Column(SMALLINT, nullable=True)  # 1 创建(未验证) 2 有效 3 失效
 
     def __init__(self, link: str, add_time: str=None):

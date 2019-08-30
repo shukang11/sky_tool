@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 from app.utils import get_unix_time_tuple, filter_all_img_src
 import logging
 
-def parser_feed(feed_url: str) -> any:
+def parser_feed(feed_url: str) -> dict:
     feeds = feedparser.parse(feed_url)
     payload = {}
     if not hasattr(feeds, 'version'):
@@ -17,7 +17,7 @@ def parser_feed(feed_url: str) -> any:
     title = feeds.feed.title if hasattr(feeds.feed, 'title') else ''  # rss的标题
     link = feeds.feed.link if hasattr(feeds.feed, 'link') else None  # 链接
     if not link:
-        return None
+        return payload
 
     payload['version'] = version
     payload['title'] = title
