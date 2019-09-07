@@ -128,7 +128,7 @@ def get_domain(url: str):
     return domain
 
 def filter_all_img_src(content: str) -> list:
-    replace_pattern = r'<[img|IMG].*?/>' #img标签的正则式
+    replace_pattern = r'<[img|IMG].*?>' #img标签的正则式
     img_url_pattern = r'.+?src="(\S+)"' #img_url的正则式
     replaced_img_url_list = []
     img_url_list = []
