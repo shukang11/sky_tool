@@ -1,7 +1,8 @@
 import random
 import urllib
+from typing import Dict, List
 
-user_agent_pool = [
+user_agent_pool: List[str] = [
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
             "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
@@ -22,7 +23,7 @@ user_agent_pool = [
             "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"
         ]
 
-def get_header(url=None, **kwargs):
+def get_header(url=None, **kwargs) -> Dict[str,  str]:
     UA = random.choice(user_agent_pool)
     header = {
         'Pragma': 'no-cache',

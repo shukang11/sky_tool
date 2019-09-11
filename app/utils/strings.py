@@ -10,8 +10,9 @@ import random
 import datetime
 import time
 import re
+from typing import Dict, List, Optional
 
-def get_unix_time_tuple(date=datetime.datetime.now(), millisecond=False):
+def get_unix_time_tuple(date=datetime.datetime.now(), millisecond=False) -> str:
     """ get time tuple
     
     get unix time tuple, default `date` is current time
@@ -48,7 +49,7 @@ def get_date_from_time_tuple(unix_time=get_unix_time_tuple(), formatter='%Y-%m-%
     return time.strftime(formatter, time_locol)
 
 
-def getmd5(code):
+def getmd5(code) -> Optional[str]:
     """ return md5 value of incoming code
     
     get md5 from code
@@ -64,7 +65,7 @@ def getmd5(code):
         return md5string.hexdigest()
     return None
 
-def get_random_num(digit=6):
+def get_random_num(digit=6) -> str:
     """ get a random num
     
     get random num 
@@ -84,7 +85,7 @@ def get_random_num(digit=6):
         result = result + append
     return result
 
-def is_emoji(content: str):
+def is_emoji(content: str) -> bool:
     """ judge str is emoji
 
     Args: str type 
@@ -104,7 +105,7 @@ def is_emoji(content: str):
     else:
         return False
 
-def contain_emoji(content: str):
+def contain_emoji(content: str) -> bool:
     """ judge str contain emoji str
 
     Args: str type
@@ -116,7 +117,7 @@ def contain_emoji(content: str):
             return True
     return False
 
-def get_domain(url: str):
+def get_domain(url: str) -> str:
     """ get domain from url by given
     
     Args: str type
@@ -127,7 +128,7 @@ def get_domain(url: str):
     domain = '{uri.netloc}'.format(uri=parsed_uri)
     return domain
 
-def filter_all_img_src(content: str) -> list:
+def filter_all_img_src(content: str) -> List[str]:
     replace_pattern = r'<[img|IMG].*?>' #img标签的正则式
     img_url_pattern = r'.+?src="(\S+)"' #img_url的正则式
     replaced_img_url_list = []
