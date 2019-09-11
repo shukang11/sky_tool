@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+from typing import Optional, List, ClassVar, Text, Dict, Set
 
 import smtplib
+from smtplib import SMTP
 from email.mime.text import MIMEText
 from time import time
 from contextlib import contextmanager
 
+
 class Connection(object):
+    mail: ClassVar
+    number_emails: int
 
     """ Handles connections to hosts. """
 
@@ -22,12 +27,12 @@ class Connection(object):
         if self.host:
             self.host.quit()
 
-    def configure_host(self):
+    def configure_host(self) -> SMTP:
         if self.mail.use_ssl:
             host = smtplib.SMTP_SSL(self.mail.server, self.mail.port)
         else:
             host = smtplib.SMTP(self.mail.server, self.mail.port)
-            
+
         if self.mail.username and self.mail.password:
             host.login(self.mail.username, self.mail.password)
         return host
@@ -69,18 +74,32 @@ class Message(object):
     :param charset: message character set
     :param extra_headers: A dictionary of additional headers for the message
     """
+    subject: str
+    recipients: List[str]
+    body: Optional[str]
+    sender: Optional[str]
+    date: Optional[str]
+    charset: Optional[str]
+    extra_headers: Optional[Dict[str, str]]
 
-    def __init__(self, subject='', recipients=[], body=None, sender=None, date=None, charset=None, extra_headers=None):
+    def __init__(self,
+                 subject='',
+                 recipients=[],
+                 body=None,
+                 sender=None,
+                 date=None,
+                 charset=None,
+                 extra_headers=None):
         self.subject = subject
         self.recipients = recipients or []
         self.sender = sender
         self.body = body
         self.date = date
         self.charset = charset
-        self.extra_headers = extra_headers or []
+        self.extra_headers = extra_headers or {}
 
     @property
-    def send_to(self):
+    def send_to(self) -> Set:
         return set(self.recipients)
 
     def _mimetext(self, text, subtype='plain'):
@@ -89,10 +108,10 @@ class Message(object):
 
     def _message(self):
         msg = self._mimetext(self.body)
-        
+
         if self.subject:
             msg["Subject"] = self.subject
-        
+
         msg["From"] = self.sender
         msg["To"] = ', '.join(list(set(self.recipients)))
 
@@ -101,13 +120,13 @@ class Message(object):
         if self.extra_headers:
             for (k, v) in self.extra_headers.items():
                 msg[k] = v
-        
+
         return msg
 
-    def as_string(self):
+    def as_string(self) -> str:
         return self._message().as_string()
 
-    def as_bytes(self):
+    def as_bytes(self) -> bytes:
         return self._message().as_bytes()
 
     def __str__(self):
@@ -116,14 +135,29 @@ class Message(object):
     def __bytes__(self):
         return self.as_bytes()
 
-    def send(self, connection: Connection):
+    def send(self, connection: Connection) -> None:
         connection.send(self)
 
-    def add_recipient(self, recipient):
+    def add_recipient(self, recipient) -> None:
         self.recipients.append(recipient)
 
+
 class Mail(object):
-    def __init__(self, server: str, username: str, password: str, port: int, use_ssl:bool, sender: str, max_emails: int):
+    server: str
+    username: str
+    password: str
+    port: int
+    use_ssl: bool
+    sender: str
+    max_emails: int
+
+    def __init__(self, server: str,
+                 username: str,
+                 password: str,
+                 port: int,
+                 use_ssl: bool,
+                 sender: str,
+                 max_emails: int):
         self.server = server
         self.username = username
         self.password = password
@@ -131,13 +165,13 @@ class Mail(object):
         self.use_ssl = use_ssl
         self.sender = sender
         self.max_emails = max_emails
-    
-    def connect(self):
+
+    def connect(self) -> Connection:
         return Connection(self)
 
-    def send(self, message):
+    def send(self, message: Message):
         with self.connect() as connection:
             message.send(connection)
-    
+
     def send_message(self, *args, **kwargs):
         self.send(Message(*args, **kwargs))

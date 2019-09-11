@@ -47,7 +47,7 @@ flask_app = Flask(__name__)
 # 定时执行
 scheduler = BackgroundScheduler()
 socket_app = SocketIO()
-db = SQLAlchemy()
+db: SQLAlchemy = SQLAlchemy()
 
 fileStorage = UploadSet(extensions=DEFAULTS)
 
