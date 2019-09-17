@@ -74,28 +74,27 @@ class Message(object):
     :param charset: message character set
     :param extra_headers: A dictionary of additional headers for the message
     """
-    subject: str
-    recipients: List[str]
-    body: Optional[str]
-    sender: Optional[str]
-    date: Optional[str]
-    charset: Optional[str]
-    extra_headers: Optional[Dict[str, str]]
+    subject = str
+    recipients = List[str]
+    body = Optional[str]
+    sender = Optional[str]
+    date = Optional[str]
+    extra_headers = Dict[str, str]
+
+    _charset: Optional[str]
 
     def __init__(self,
-                 subject='',
-                 recipients=[],
-                 body=None,
-                 sender=None,
-                 date=None,
-                 charset=None,
-                 extra_headers=None):
+                 subject: str,
+                 recipients: Optional[List[str]],
+                 body: Optional[str],
+                 sender: Optional[str],
+                 date: Optional[str] = None,
+                 extra_headers: Optional[Dict[str, str]] = None):
         self.subject = subject
         self.recipients = recipients or []
         self.sender = sender
         self.body = body
         self.date = date
-        self.charset = charset
         self.extra_headers = extra_headers or {}
 
     @property
@@ -103,7 +102,7 @@ class Message(object):
         return set(self.recipients)
 
     def _mimetext(self, text, subtype='plain'):
-        charset = self.charset or 'utf-8'
+        charset = 'utf-8'
         return MIMEText(text, _subtype=subtype, _charset=charset)
 
     def _message(self):
@@ -116,17 +115,15 @@ class Message(object):
         msg["To"] = ', '.join(list(set(self.recipients)))
 
         msg["Data"] = self.date
-
         if self.extra_headers:
-            for (k, v) in self.extra_headers.items():
-                msg[k] = v
+            print(self.extra_headers)
 
         return msg
 
-    def as_string(self) -> str:
+    def as_string(self):
         return self._message().as_string()
 
-    def as_bytes(self) -> bytes:
+    def as_bytes(self):
         return self._message().as_bytes()
 
     def __str__(self):
@@ -135,10 +132,10 @@ class Message(object):
     def __bytes__(self):
         return self.as_bytes()
 
-    def send(self, connection: Connection) -> None:
+    def send(self, connection: Connection):
         connection.send(self)
 
-    def add_recipient(self, recipient) -> None:
+    def add_recipient(self, recipient):
         self.recipients.append(recipient)
 
 
@@ -151,20 +148,21 @@ class Mail(object):
     sender: str
     max_emails: int
 
-    def __init__(self, server: str,
+    def __init__(self,
+                 server: str,
                  username: str,
                  password: str,
                  port: int,
-                 use_ssl: bool,
+                 use_ssl: Optional[bool],
                  sender: str,
-                 max_emails: int):
+                 max_emails: Optional[int]):
         self.server = server
         self.username = username
         self.password = password
         self.port = port
-        self.use_ssl = use_ssl
+        self.use_ssl = use_ssl or False
         self.sender = sender
-        self.max_emails = max_emails
+        self.max_emails = max_emails or 3
 
     def connect(self) -> Connection:
         return Connection(self)

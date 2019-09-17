@@ -2,6 +2,7 @@ import time
 import logging
 import requests
 import pymysql
+import os
 from celery_tasks import celery_app, db
 from celery import Task
 from celery_tasks.email import Mail, Message
@@ -36,7 +37,7 @@ def add(x: int, y: int, *args, **kwargs):
     return result
 
 
-@celery_app.task(ignore_result=True, default_retry_delay=300, max_retries=3)
+@celery_app.task(ignore_result=False, default_retry_delay=300, max_retries=3)
 def async_email_to(subject: str, body: str, recipients: list):
     """
     send email
@@ -46,11 +47,15 @@ def async_email_to(subject: str, body: str, recipients: list):
     recipients: 收件人
     Return: None
     """
-    user = "sunshukang30@163.com"
-    password = "a12345678"  # 授权码
+    
+    smtp_mail = os.environ.get('SMPT_MAIL', None)
+    auth_code = os.environ.get('SMPT_MAIL_AUTH_CODE', None)
+    port = os.environ.get('SMPT_MAIL_PORT', None)
+    password = auth_code  # 授权码
     receivers = recipients
-    sender = user
-    mail = Mail("smtp.163.com", user, password, 465,  True, sender, 10)
+    sender = smtp_mail
+    print(smtp_mail, auth_code, port)
+    mail = Mail("smtp.163.com", smtp_mail, password, port,  True, sender, 10)
     message = Message(subject=subject or "",
                       recipients=receivers, body=body or "", sender=sender)
     mail.send(message)

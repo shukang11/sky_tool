@@ -55,6 +55,7 @@ def email_to():
     subject = params.get('subject')
     body = params.get('body')
     recs = params.get('recipients')
+    print(params)
     if not subject or not body or not recs:
         return CommonError.get_error(40000)
     receivers = []
@@ -73,7 +74,7 @@ def email_to():
 @login_require
 def query_task():
     params = request.values  or request.get_json() or {}
-    key = params.get('key') or 'celery*'
+    key: str = params.get('key') or 'celery*'
     if not key:
         return CommonError.get_error(40000)
     result = redisClient.get('celery-task-meta-'+str(key))
