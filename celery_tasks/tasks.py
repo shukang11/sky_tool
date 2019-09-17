@@ -1,3 +1,4 @@
+from typing import List, Optional, Dict
 import time
 import logging
 import requests
@@ -38,7 +39,11 @@ def add(x: int, y: int, *args, **kwargs):
 
 
 @celery_app.task(ignore_result=False, default_retry_delay=300, max_retries=3)
-def async_email_to(subject: str, body: str, recipients: list):
+def async_email_to(subject: str,
+                   body: str,
+                   recipients: List[str],
+                   attaches: Optional[List[str]],
+                   extra_headers: Optional[Dict[str, str]]=None):
     """
     send email
     Args:
@@ -47,17 +52,26 @@ def async_email_to(subject: str, body: str, recipients: list):
     recipients: 收件人
     Return: None
     """
-    
+
     smtp_mail = os.environ.get('SMPT_MAIL', None)
     auth_code = os.environ.get('SMPT_MAIL_AUTH_CODE', None)
     port = os.environ.get('SMPT_MAIL_PORT', None)
     password = auth_code  # 授权码
     receivers = recipients
     sender = smtp_mail
-    print(smtp_mail, auth_code, port)
-    mail = Mail("smtp.163.com", smtp_mail, password, port,  True, sender, 10)
+    mail = Mail("smtp.163.com",
+                smtp_mail,
+                password,
+                port,
+                True,
+                sender,
+                10)
     message = Message(subject=subject or "",
-                      recipients=receivers, body=body or "", sender=sender)
+                      recipients=receivers,
+                      body=body or "",
+                      sender=sender,
+                      attaches=attaches,
+                      extra_headers=extra_headers)
     mail.send(message)
 
 
@@ -78,14 +92,14 @@ def async_parser_feed(url: str, user_id: int = None):
         VALUES ('{task_id}', '{tast_name}', '{user_id}', '{argsrepr}', '{kwargs}', '{begin_at}', '{is_succ}') 
         ON DUPLICATE KEY UPDATE begin_at='{begin_at}';
         """.format(task_id=r.id,
-                    tast_name=r.task,
-                    user_id=0,
-                    argsrepr=pymysql.escape_string(
-                        str(r.args)),
-                    kwargs=pymysql.escape_string(
-                        str(r.kwargs)),
-                    begin_at=get_unix_time_tuple(),
-                    is_succ=int(parse_result))
+                   tast_name=r.task,
+                   user_id=0,
+                   argsrepr=pymysql.escape_string(
+                       str(r.args)),
+                   kwargs=pymysql.escape_string(
+                       str(r.kwargs)),
+                   begin_at=get_unix_time_tuple(),
+                   is_succ=int(parse_result))
         db.query(sql)
     result = parser_feed(url)
     sql = """
@@ -102,7 +116,7 @@ def async_parser_feed(url: str, user_id: int = None):
     db.query(sql)
     if result:
         parse_result = parse_inner(url, result)
-    
+
     if hasattr(async_parser_feed.request, 'task'):
         r = async_parser_feed.request
         sql = """

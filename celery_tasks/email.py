@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 from typing import Optional, List, ClassVar, Text, Dict, Set
-
+import os
 import smtplib
 from smtplib import SMTP
 from email.mime.text import MIMEText
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from time import time
 from contextlib import contextmanager
 
+def get_file_path(file: str) -> Optional[str]:
+    from config import config, Config
+    env = os.environ.get('FLASK_ENV')
+    c: Config = config.get(env)
+    return os.path.join(os.path.abspath(c.UPLOAD_FOLDER), 'files', file)
 
 class Connection(object):
     mail: ClassVar
@@ -32,18 +40,17 @@ class Connection(object):
             host = smtplib.SMTP_SSL(self.mail.server, self.mail.port)
         else:
             host = smtplib.SMTP(self.mail.server, self.mail.port)
-
+        # host.set_debuglevel(1)
         if self.mail.username and self.mail.password:
             host.login(self.mail.username, self.mail.password)
         return host
 
-    def send(self, message, envelop_from=None):
+    def send(self, message: ClassVar, envelop_from=None):
         """ 验证并发送 """
         assert message.send_to, "没有收件人"
         assert message.sender, "没有发件人"
 
-        if not message.date:
-            message.date = str(time())
+        message.date = str(time())
 
         if not self.host:
             raise ValueError
@@ -55,7 +62,7 @@ class Connection(object):
 
         self.number_emails += 1
 
-        if self.number_emails == self.mail.max_emails:
+        if self.number_emails >= self.mail.max_emails:
             self.number_emails = 0
             self.host.quit()
             self.host = self.configure_host()
@@ -78,45 +85,57 @@ class Message(object):
     recipients = List[str]
     body = Optional[str]
     sender = Optional[str]
-    date = Optional[str]
     extra_headers = Dict[str, str]
+    attaches = Optional[List[str]] # 附件
 
-    _charset: Optional[str]
+    _charset: Optional[str] = 'utf-8'
 
     def __init__(self,
                  subject: str,
                  recipients: Optional[List[str]],
                  body: Optional[str],
                  sender: Optional[str],
-                 date: Optional[str] = None,
+                 attaches: Optional[List[str]],
                  extra_headers: Optional[Dict[str, str]] = None):
         self.subject = subject
         self.recipients = recipients or []
         self.sender = sender
         self.body = body
-        self.date = date
+        self.attaches = attaches
         self.extra_headers = extra_headers or {}
 
     @property
     def send_to(self) -> Set:
         return set(self.recipients)
 
-    def _mimetext(self, text, subtype='plain'):
-        charset = 'utf-8'
-        return MIMEText(text, _subtype=subtype, _charset=charset)
+    def _mimetext(self, text, subtype='plain') -> MIMEText:
+        message = MIMEText(text, _subtype=subtype, _charset=self._charset)
+        return message
 
-    def _message(self):
-        msg = self._mimetext(self.body)
-
-        if self.subject:
-            msg["Subject"] = self.subject
-
-        msg["From"] = self.sender
-        msg["To"] = ', '.join(list(set(self.recipients)))
-
-        msg["Data"] = self.date
+    def _message(self) -> MIMEMultipart:
+        message = MIMEMultipart()
+        message["Subject"] = Header(self.subject).encode()
+        message["From"] = Header('SKY_TOOL<{sender}>'.format(sender=self.sender), self._charset)
+        recs: List[str] = list(set(self.recipients))
+        resc_maped: List[str] = []
+        for r in recs:
+            resc_maped.append("jack<{x}>".format(x=r))
+        to_resc = ', '.join(resc_maped)
+        message["To"] = Header(to_resc)
+        message.attach(self._mimetext(self.body))
         if self.extra_headers:
-            print(self.extra_headers)
+            for (k, v) in self.extra_headers.items():
+                msg[k] = v
+        if self.attaches:
+            for path in self.attaches:
+                path = get_file_path(path)
+                print(path)
+                # attach = MIMEText(open(path, 'r').read(), 'base64', 'utf-8')
+                attach = MIMEApplication(open(path, 'rb').read())
+                attach["Content-Type"] = 'application/octet-stream'# 这里的filename可以任意写，写什么名字，邮件中显示什么名字
+                attach["Content-Disposition"] = 'attachment; filename="{}"'.format(path.split('/')[-1])
+                message.attach(attach)
+        return message
 
         return msg
 
