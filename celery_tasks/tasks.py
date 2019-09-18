@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 import time
 import logging
 import requests
@@ -11,7 +11,6 @@ from celery_tasks.monitor import exec_cmd
 from celery_tasks.rss import parser_feed, parse_inner
 from app.utils import get_unix_time_tuple
 from app.models import TaskModel
-
 
 class CallBackTask(Task):
     def on_success(self, retval, task_id, args, kwargs):
@@ -53,9 +52,14 @@ def async_email_to(subject: str,
     Return: None
     """
 
-    smtp_mail = os.environ.get('SMPT_MAIL', None)
-    auth_code = os.environ.get('SMPT_MAIL_AUTH_CODE', None)
-    port = os.environ.get('SMPT_MAIL_PORT', None)
+    smtp_mail = os.environ.get('SMPT_MAIL_163', None)
+    auth_code = os.environ.get('SMPT_MAIL_163_AUTH_CODE', None)
+    need_ssl = True
+    port: str = ""
+    if need_ssl:
+        port = os.environ.get('SMPT_MAIL_163_SSL_PORT', None)
+    else:
+        port = os.environ.get('SMPT_MAIL_163_NORMAL_PORT', None)
     password = auth_code  # 授权码
     receivers = recipients
     sender = smtp_mail
@@ -63,7 +67,7 @@ def async_email_to(subject: str,
                 smtp_mail,
                 password,
                 port,
-                True,
+                need_ssl,
                 sender,
                 10)
     message = Message(subject=subject or "",
