@@ -5,7 +5,7 @@
 @time: 2019-01-26 09:31
 
 """
-
+from typing import Dict, Tuple
 from flask import jsonify, Response
 
 
@@ -30,7 +30,7 @@ def __check_request(request="") -> str:
     return request
 
 
-def __error_handler(msg=None, code=404, request="", data=None) -> dict:
+def __error_handler(msg=None, code=404, request="", data=None) -> Dict[str, any]:
     """
     将不正确的参数格式化返回
     :param msg: 错误信息
@@ -49,25 +49,25 @@ def __error_handler(msg=None, code=404, request="", data=None) -> dict:
     return result
 
 
-def r400_invalid_requet(msg=None, code=400, request=""):
+def r400_invalid_requet(msg=None, code=400, request="") -> Tuple[str, int]:
     """[POST/PUT/PATCH]：用户发出的请求有错误，服务器没有进行新建或修改数据的操作"""
     return jsonify(__error_handler(msg, code, request)), 400
 
 
-def r401_unauthorized(msg=None, code=401, request=""):
+def r401_unauthorized(msg=None, code=401, request="") -> Tuple[str, int]:
     """[*]：表示用户没有权限（令牌、用户名、密码错误）。"""
     return jsonify(__error_handler(msg, code, request)), 401
 
 
-def r403_forbidden(msg=None, code=403, request=""):
+def r403_forbidden(msg=None, code=403, request="") -> Tuple[str, int]:
     return jsonify(__error_handler(msg, code, request)), 403
 
 
-def r404_not_found(msg=None, code=401, request=""):
+def r404_not_found(msg=None, code=401, request="") -> Tuple[str, int]:
     return jsonify(__error_handler(msg, code, request)), 404
 
 
-def r500_server_error(msg=None, code=401, request=""):
+def r500_server_error(msg=None, code=401, request="") -> Tuple[str, int]:
     return jsonify(__error_handler(msg, code, request)), 500
 
 
@@ -76,11 +76,11 @@ R403_FORBIDDEN = {}
 R404_NOT_FOUND = {}
 
 
-def boolValue(value: bool) -> dict:
+def boolValue(value: bool) -> Dict[str, bool]:
     return {"boolValue": value}
 
 
-def response_succ(status_code=200, body={}, header=None):
+def response_succ(status_code=200, body={}, header=None) -> Tuple[Dict[str, any], int, Dict[str, str]]:
     success_codes = [200, 201, 202, 204]
     if status_code not in success_codes:
         raise ValueError("statusCode is not in successCodes")
@@ -95,7 +95,7 @@ def response_succ(status_code=200, body={}, header=None):
     except Exception as _:
         raise ValueError("Unknown body")
     if header is None:
-        header = {
+        header: Dict[str, str] = {
             # 'Access-Control-Allow-Headers': 'Content-Type,Authorization',
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
@@ -104,7 +104,7 @@ def response_succ(status_code=200, body={}, header=None):
     return result, status_code, header
 
 
-def response_error(error_code=0, msg=None, http_code=0, header=None):
+def response_error(error_code=0, msg=None, http_code=0, header=None) -> Tuple[str, int, Dict[str, str]]:
     """
     200 OK - [GET]：服务器成功返回用户请求的数据，该操作是幂等的（Idempotent）。
     201 CREATED - [POST/PUT/PATCH]：用户新建或修改数据成功。

@@ -55,6 +55,8 @@ def email_to():
     subject = params.get('subject')
     body = params.get('body')
     recs = params.get('recipients')
+    files = params.get('fileIds')
+    print(params)
     if not subject or not body or not recs:
         return CommonError.get_error(40000)
     receivers = []
@@ -62,10 +64,14 @@ def email_to():
         receivers.append(recs)
     elif isinstance(recs, list):
         receivers.extend(recs)
-
+    fileIds = []
+    if isinstance(files, str):
+        fileIds.append(files)
+    elif isinstance(files, list):
+        fileIds.extend(files)
     result = {}
     result['recipients'] = receivers
-    task = async_email_to.delay(subject=subject, body=body, recipients=receivers)
+    task = async_email_to.delay(subject=subject, body=body, recipients=receivers, attaches=fileIds)
     result['task_id'] = task.id
     return response_succ(body=result)
 
@@ -73,7 +79,7 @@ def email_to():
 @login_require
 def query_task():
     params = request.values  or request.get_json() or {}
-    key = params.get('key') or 'celery*'
+    key: str = params.get('key') or 'celery*'
     if not key:
         return CommonError.get_error(40000)
     result = redisClient.get('celery-task-meta-'+str(key))

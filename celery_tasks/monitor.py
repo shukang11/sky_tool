@@ -5,7 +5,7 @@ import os
 import time
 import threading
 
-def exec_cmd(command):
+def exec_cmd(command) -> str:
     r = os.popen(command)
     text = r.read()
     r.close()

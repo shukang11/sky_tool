@@ -1,0 +1,1 @@
+cd ~/Documents/python/sky_tool && sh ~/Documents/python/sky_tool/scripts/supervisord_command.sh > nohup.out

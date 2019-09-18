@@ -1,6 +1,7 @@
 import re
 import time
 import logging
+from typing import Optional, Dict, Text
 import feedparser
 from celery_tasks import db
 import pymysql
@@ -8,7 +9,7 @@ from sqlalchemy.sql import text
 from app.utils import get_unix_time_tuple, filter_all_img_src
 import logging
 
-def parser_feed(feed_url: str) -> dict:
+def parser_feed(feed_url: str) -> Dict[str, any]:
     feeds = feedparser.parse(feed_url)
     payload = {}
     if not hasattr(feeds, 'version'):
@@ -39,7 +40,7 @@ def parser_feed(feed_url: str) -> dict:
     return payload
 
 
-def parse_inner(url: str, payload: dict) -> bool:
+def parse_inner(url: str, payload: Dict[str, any]) -> bool:
     if not payload:
         return False
     if len(payload) == 0:
@@ -85,7 +86,7 @@ def parse_inner(url: str, payload: dict) -> bool:
     return True
 
 
-def parse_rss20(item: dict) -> dict:
+def parse_rss20(item: Dict[str, any]) -> Optional[Dict[str, any]]:
     """ 
     知乎订阅解析
     {
@@ -130,10 +131,10 @@ def parse_rss20(item: dict) -> dict:
         return None
 
 
-def parse_rss10(item: dict) -> dict:
+def parse_rss10(item: Dict[str, any]) -> Optional[Dict[str, any]]:
     return parse_rss20(item)
 
 
-def parse_atom(item: dict) -> dict:
+def parse_atom(item: Dict[str, any]) -> Optional[Dict[str, any]]:
     return parse_rss20(item)
 
