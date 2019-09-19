@@ -134,3 +134,4 @@ celerybeat-schedule.dir
 
 # settings
 .vscode/
+settings.py
