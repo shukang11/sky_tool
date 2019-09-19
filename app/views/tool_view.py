@@ -11,7 +11,6 @@ from flask import request, redirect, url_for
 from ..views import api
 from app.utils import response_succ, CommonError, login_require
 from app.utils.ext import socket_app, redisClient, db
-from celery_tasks.tasks import async_email_to, add
 
 @api.route("/tool/encryption/<string:encrypt_type>", methods=["POST", "GET"])
 def encryption(encrypt_type: str = "md5"):
@@ -56,9 +55,9 @@ def email_to():
     body = params.get('body')
     recs = params.get('recipients')
     files = params.get('fileIds')
-    print(params)
     if not subject or not body or not recs:
         return CommonError.get_error(40000)
+    from celery_tasks.tasks import async_email_to
     receivers = []
     if isinstance(recs, str):
         receivers.append(recs)
@@ -89,10 +88,3 @@ def query_task():
     else:
         return CommonError.error_toast('no task')
     return response_succ(body=result)
-
-# debug route
-@api.route('/tool/test_add', methods=['GET', 'POST'])
-def test_add():
-    payload = {}
-    payload['id'] = 'task.id'
-    return response_succ(body=payload)

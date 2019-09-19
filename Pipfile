@@ -21,6 +21,7 @@ eventlet = "*"
 gunicorn = "==18.0"
 python-dotenv = "*"
 mypy = "*"
+dynaconf = {extras = ["all"],version = "*"}
 
 [dev-packages]
 mypy = "*"
