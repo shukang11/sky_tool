@@ -1,6 +1,7 @@
 from app.utils.ext import Flask, db, scheduler, \
     current_app, socket_app, flask_app, fileStorage, configure_uploads
 from config import config, Config, root_dir
+from dynaconf import FlaskDynaconf, settings
 import os
 
 __all__ = ['create_app']
@@ -38,6 +39,7 @@ def create_app(env: str) -> Flask:
     assert(type(env) is str)
     config_obj = config[env]
     app = Flask(__name__)
+    FlaskDynaconf(app=app, dynaconf_instance=settings)
     app.config.from_object(config_obj)
     # 注册插件
     db.init_app(app)
