@@ -1,6 +1,6 @@
 [[source]]
 url = "https://pypi.douban.com/simple/"
-verify_ssl = true
+verify_ssl = false
 name = "pypi"
 
 [packages]
@@ -31,4 +31,4 @@ nose = "*"
 "autopep8" = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
